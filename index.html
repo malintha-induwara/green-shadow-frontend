@@ -1,11 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-  
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modern Login Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style></style>
+  </head>
+  <body>
+    <div class="min-h-screen flex flex-col-reverse md:flex-row">
+      <div class="hidden md:block md:w-[70%] bg-cover p-5 bg-center">
+        <img
+          src="/assets/images/loginImage.jpg"
+          alt="Login"
+          class="w-full h-full rounded-lg object-cover"
+        />
+      </div>
+
+      <div class="w-full md:w-[30%] p-8 flex flex-col justify-center bg-white">
+        <div class="max-w-md w-full mx-auto space-y-8">
+          <div class="text-center">
+            <h2 class="mt-6 text-3xl font-bold text-green-500">Green Shadow</h2>
+            <p class="mt-2 text-sm text-gray-600">
+              Please sign in to your account
+            </p>
+          </div>
+
+          <form class="mt-8 space-y-6">
+            <div class="space-y-4">
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <input
+                  type="email"
+                  placeholder="Email address"
+                  class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+              </div>
+
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
+                  </svg>
+                </div>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <input
+                  type="checkbox"
+                  class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                />
+                <label class="ml-2 block text-sm text-gray-900">
+                  Remember me
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <button
+                type="submit"
+                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                Sign in
+              </button>
+            </div>
+          </form>
+        </div>
+       
+      </div>
+      <div
+      class="absolute right-5 top-5 bg-white shadow-[0_3px_10px_-3px_rgba(6,81,237,0.3)] border-t-4 border-red-500 text-gray-800 flex items-center w-max max-w-sm p-4 rounded-md"
+      role="alert" id="errorAlert"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="w-[18px] shrink-0 fill-red-500 inline mr-3"
+        viewBox="0 0 32 32"
+      >
+        <path
+          d="M16 1a15 15 0 1 0 15 15A15 15 0 0 0 16 1zm6.36 20L21 22.36l-5-4.95-4.95 4.95L9.64 21l4.95-5-4.95-4.95 1.41-1.41L16 14.59l5-4.95 1.41 1.41-5 4.95z"
+          data-original="#ea2d3f"
+        />
+      </svg>
+      <span class="text-sm font-semibold tracking-wide"
+        >Something went wrong</span
+      >
+    </div>
+    </div>
+    
+    <script type="module" src="./controller/loginController.js"></script>
+  </body>
 </html>
