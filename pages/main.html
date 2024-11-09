@@ -1,0 +1,137 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Green Shadow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <div class="h-screen flex">
+      
+      <aside class="w-64 bg-white shadow-lg hidden md:block">
+        <div class="h-full flex flex-col">
+          
+          <div class="p-4 border-b">
+            <h2 class="text-2xl font-bold text-green-500">Green Shadow</h2>
+          </div>
+
+          
+          <nav class="flex-1 p-4">
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="#"
+                  data-src="/pages/dashboard.html"
+                  class="nav-link flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-lg"
+                >
+                <img class="w-5 h-5 mr-3" src="/assets/images/icons/dashboard.svg" alt="dashboard">
+                  Dashboard
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  data-src="/pages/cropManagement.html"
+                  class="nav-link flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-lg"
+                >
+                <img  class="w-5 h-5 mr-3" src="/assets/images/icons/crop.svg" alt="crop" >
+
+                  Crop
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  data-src="/pages/cropDetailManagement.html"
+                  class="nav-link flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-lg"
+                >
+                  <img  class="w-5 h-5 mr-3" src="/assets/images/icons/cropDetail.svg" alt="cropDetail" >
+                  Crop Detail
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  data-src="/pages/equipmentManagement.html"
+                  class="nav-link flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-lg"
+                >
+                 <img src="/assets/images/icons/equipment.svg" class="w-5 h-5 mr-3" alt="equipment" >
+                  Equipment
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  data-src="/pages/fieldManagement.html"
+                  class="nav-link flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-lg"
+                >
+                 <img src="/assets/images/icons/field.svg" class="w-5 h-5 mr-3" alt="field">
+                  Field
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  data-src="/pages/staffManagement.html"
+                  class="nav-link flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-lg"
+                >
+                <img src="/assets/images/icons/staff.svg"  class="w-5 h-5 mr-3" alt="staff" >
+                  Staff
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  data-src="/pages/userManagement.html"
+                  class="nav-link flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-lg"
+                >
+                  <img src="/assets/images/icons/user.svg" class="w-5 h-5 mr-3" alt="user" >
+                  User
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  data-src="/pages/vehicleManagement.html"
+                  class="nav-link flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-lg"
+                >
+                 <img src="/assets/images/icons/vehicle.svg" class="w-5 h-5 mr-3" alt="vehicle">
+                  Vehicle
+                </a>
+              </li>
+            </ul>
+          </nav>
+
+          <!-- Logout Button -->
+          <div class="p-4 border-t">
+            <button
+              class="flex items-center w-full p-3 text-red-600 hover:bg-red-50 rounded-lg"
+            >
+            <img  class="w-5 h-5 mr-3" src="/assets/images/icons/logout.svg" alt="logout">
+              Logout
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <iframe
+        id="contentFrame"
+        src="/pages/dashboard.html"
+        class="w-full h-screen"
+        frameborder="0"
+      ></iframe>
+      
+    </div>
+
+    <script type="module" src="/controller/mainController.js"></script>
+  </body>
+</html>
