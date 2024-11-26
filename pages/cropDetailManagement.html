@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <div class="h-screen flex">
+      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
+        <!-- Top Navigation -->
+        <nav class="bg-white shadow-sm">
+          <div class="mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+              <div class="flex items-center">
+                <button
+                  type="button"
+                  class="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+                >
+                <img  class="h-6 w-6" src="/assets/images/icons/burgerButton.svg" alt="burgerButton">
+                </button>
+                <h1 class="text-xl font-semibold ml-2 md:ml-0">
+                  Crop Details Management
+                </h1>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        <!-- Crop Details Content -->
+        <div class="p-6">
+          <!-- Crop Stats -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <!-- Total Logs -->
+            <div class="bg-white rounded-lg shadow p-6">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100 text-green-600">
+                  <img class="w-6 h-6" src="/assets/images/icons/totalLogs.svg" alt="totalLogs">
+                </div>
+                <div class="ml-4">
+                  <h2 class="text-gray-600 text-sm">Total Logs</h2>
+                  <p
+                    id="totalLogs"
+                    class="text-2xl font-semibold text-gray-800"
+                  >
+                    0
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Today's Logs -->
+            <div class="bg-white rounded-lg shadow p-6">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                  <img class="w-6 h-6" src="/assets/images/icons/todayLog.svg" alt="today">
+                </div>
+                <div class="ml-4">
+                  <h2 class="text-gray-600 text-sm">Today's Logs</h2>
+                  <p
+                    id="todayLogs"
+                    class="text-2xl font-semibold text-gray-800"
+                  >
+                    0
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Active Fields -->
+            <div class="bg-white rounded-lg shadow p-6">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                  <img class="w-6 h-6" src="/assets/images/icons/totalFields.svg" alt="field">
+                </div>
+                <div class="ml-4">
+                  <h2 class="text-gray-600 text-sm">Active Fields</h2>
+                  <p
+                    id="activeFields"
+                    class="text-2xl font-semibold text-gray-800"
+                  >
+                    0
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Crop Details Table -->
+          <div class="bg-white rounded-lg shadow">
+            <div class="p-6">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">Crop Detail Logs</h3>
+                <div class="flex items-center">
+                  <button
+                    id="addLogBtn"
+                    class="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-green-600"
+                  >
+                  <img  class="w-5 h-5 mr-2" src="/assets/images/icons/add.svg" alt="add">
+                    Add Log
+                  </button>
+                </div>
+              </div>
+              <div class="overflow-x-auto">
+                <div class="h-fit overflow-y-auto">
+                  <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50 sticky top-0">
+                      <tr>
+                        <th
+                          class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Log Code
+                        </th>
+                        <th
+                          class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Log Date
+                        </th>
+                        <th
+                          class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Log Detail
+                        </th>
+                        <th
+                          class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Observed Image
+                        </th>
+                        <th
+                          class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody
+                      id="logTable"
+                      class="bg-white divide-y divide-gray-200"
+                    ></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Log Modal -->
+      <div
+        id="logModal"
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full"
+      >
+        <div
+          class="fixed inset-0 h-fit mx-auto my-auto p-5 border max-w-3xl shadow-lg rounded-md bg-white"
+        >
+          <div class="mt-3">
+            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">
+              Add New Log
+            </h3>
+            <form id="logForm">
+              <div class="grid grid-cols-2 gap-8">
+                <div>
+                  <div class="mb-4 hidden" id="logCodeContainer">
+                    <label class="block text-gray-700 text-sm font-bold mb-2"
+                      >Log Code</label
+                    >
+                    <input
+                      type="text"
+                      id="logCode"
+                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      disabled
+                    />
+                  </div>
+
+                  <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2"
+                      >Log Date</label
+                    >
+                    <input
+                      type="date"
+                      id="logDate"
+                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      required
+                    />
+                  </div>
+
+                  <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2"
+                      >Log Detail</label
+                    >
+                    <textarea
+                      id="logDetail"
+                      rows="3"
+                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      required
+                    ></textarea>
+                  </div>
+
+                  <!-- Crop Dropdown -->
+                  <div class="mb-4 relative" id="cropDropdownContainer">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                      Select Crops
+                    </label>
+                    <div class="relative">
+                      <div
+                        class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline cursor-pointer flex items-center"
+                        id="cropSearchContainer"
+                      >
+                        <svg
+                          class="w-4 h-4 text-gray-500 mr-2"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <circle cx="11" cy="11" r="8" />
+                          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                        <input
+                          type="text"
+                          id="cropSearchInput"
+                          class="w-full focus:outline-none"
+                          placeholder="Search crops..."
+                        />
+                        <svg
+                          class="w-4 h-4 text-gray-500"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                      </div>
+                      <div
+                        id="cropDropdown"
+                        class="hidden absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-48 overflow-y-auto"
+                      ></div>
+                    </div>
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                      Selected Crops
+                    </label>
+                    <div
+                      id="selectedCrops"
+                      class="flex flex-wrap gap-2 min-h-12 p-2 border rounded"
+                    >
+                      <div class="text-gray-400 py-1">No crops selected</div>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <!-- Field Dropdown -->
+                  <div class="mb-4 relative" id="fieldDropdownContainer">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                      Select Fields
+                    </label>
+                    <div class="relative">
+                      <div
+                        class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline cursor-pointer flex items-center"
+                        id="fieldSearchContainer"
+                      >
+                        <svg
+                          class="w-4 h-4 text-gray-500 mr-2"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <circle cx="11" cy="11" r="8" />
+                          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                        <input
+                          type="text"
+                          id="fieldSearchInput"
+                          class="w-full focus:outline-none"
+                          placeholder="Search fields..."
+                        />
+                        <svg
+                          class="w-4 h-4 text-gray-500"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                      </div>
+                      <div
+                        id="fieldDropdown"
+                        class="hidden absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-48 overflow-y-auto"
+                      ></div>
+                    </div>
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                      Selected Fields
+                    </label>
+                    <div
+                      id="selectedFields"
+                      class="flex flex-wrap gap-2 min-h-12 p-2 border rounded"
+                    >
+                      <div class="text-gray-400 py-1">No fields selected</div>
+                    </div>
+                  </div>
+
+                  <!-- Staff IDs Dropdown -->
+                  <div class="mb-4 relative" id="staffDropdownContainer">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                      Select Staff
+                    </label>
+                    <div class="relative">
+                      <div
+                        class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline cursor-pointer flex items-center"
+                        id="staffSearchContainer"
+                      >
+                        <svg
+                          class="w-4 h-4 text-gray-500 mr-2"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <circle cx="11" cy="11" r="8" />
+                          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                        <input
+                          type="text"
+                          id="staffSearchInput"
+                          class="w-full focus:outline-none"
+                          placeholder="Search staff..."
+                        />
+                        <svg
+                          class="w-4 h-4 text-gray-500"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                      </div>
+                      <div
+                        id="staffDropdown"
+                        class="hidden absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-48 overflow-y-auto"
+                      ></div>
+                    </div>
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                      Selected Staff
+                    </label>
+                    <div
+                      id="selectedStaff"
+                      class="flex flex-wrap gap-2 min-h-12 p-2 border rounded"
+                    >
+                      <div class="text-gray-400 py-1">No staff selected</div>
+                    </div>
+                  </div>
+
+                  <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2"
+                      >Observed Image</label
+                    >
+                    <div class="bg-white rounded-lg shadow-sm">
+                      <div
+                        id="dropZone"
+                        class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center transition-all duration-200 relative"
+                      >
+                        <div id="uploadState" class="space-y-4">
+                          <div class="flex justify-center">
+                            <svg
+                              class="w-12 h-12 text-gray-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                          </div>
+                          <div class="text-gray-600">
+                            <span class="font-medium"
+                              >Drop your image here</span
+                            >
+                            or
+                            <label
+                              class="text-green-600 hover:text-green-500 cursor-pointer"
+                            >
+                              <span>browse</span>
+                              <input
+                                type="file"
+                                class="hidden"
+                                id="fileInput"
+                                accept="image/*"
+                              />
+                            </label>
+                          </div>
+                          <p class="text-sm text-gray-500">
+                            PNG, JPG up to 10MB
+                          </p>
+                        </div>
+
+                        <!-- Image Preview -->
+                        <div id="imagePreview" class="hidden">
+                          <div class="relative group">
+                            <img
+                              id="previewImg"
+                              class="max-h-40 max-w-32 mx-auto"
+                              alt="preview"
+                            />
+                            <button
+                              id="removeImageBtn"
+                              class="absolute top-2 right-2 p-2 bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <svg
+                                class="w-5 h-5 text-gray-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M6 18L18 6M6 6l12 12"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+
+                        <!-- Upload Progress -->
+                        <div
+                          id="uploadProgress"
+                          class="hidden absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center"
+                        >
+                          <div class="w-full max-w-sm px-4">
+                            <div class="flex items-center justify-between mb-2">
+                              <div class="flex items-center">
+                                <svg
+                                  class="animate-spin -ml-1 mr-3 h-5 w-5 text-green-600"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <circle
+                                    class="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    stroke-width="4"
+                                  ></circle>
+                                  <path
+                                    class="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                  ></path>
+                                </svg>
+                                <span class="text-sm font-medium text-gray-900"
+                                  >Uploading...</span
+                                >
+                              </div>
+                              <span
+                                class="text-sm font-medium text-gray-500"
+                                id="progressText"
+                                >0%</span
+                              >
+                            </div>
+                            <div class="bg-gray-200 rounded-full h-2.5">
+                              <div
+                                class="bg-green-600 h-2.5 rounded-full transition-all duration-300"
+                                id="progressBar"
+                                style="width: 0%"
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center justify-end mt-4">
+                <button
+                  id="cancelLogBtn"
+                  type="button"
+                  class="bg-gray-500 text-white font-bold py-2 px-4 rounded mr-2 hover:bg-gray-600 focus:outline-none focus:shadow-outline"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  id="saveLogBtn"
+                  class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600 focus:outline-none focus:shadow-outline"
+                >
+                  Save Log
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="../controller/cropDetailController.js"></script>
+  </body>
+</html>
