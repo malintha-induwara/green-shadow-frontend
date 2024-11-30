@@ -25,6 +25,7 @@ function resetForm() {
   document.getElementById("userForm").removeAttribute("data-mode");
   document.getElementById("userForm").removeAttribute("data-edit-id");
   document.getElementById("saveUserBtn").classList.remove("hidden");
+  document.getElementById("modalTitle").textContent = "Add User";
 
   const formElements = document.getElementById("userForm").elements;
   for (let element of formElements) {
@@ -74,15 +75,11 @@ function editUser(email) {
   const user = users.find((user) => user.email === email);
   if (!user) return;
 
-
+  document.getElementById("modalTitle").textContent = "Edit User";
   document.getElementById("email").disabled = true;
-
-  // Populate modal with user data
   document.getElementById("email").value = user.email;
   document.getElementById("password").value = user.password;
   document.getElementById("role").value = user.role;
-
-  // Change form mode to edit
   document.getElementById("userForm").setAttribute("data-mode", "edit");
   document.getElementById("userForm").setAttribute("data-edit-id", email);
 
@@ -93,13 +90,12 @@ function viewUser(email) {
   const user = users.find((user) => user.email === email);
   if (!user) return;
 
-  // Populate modal with user data
+  document.getElementById("modalTitle").textContent = "View User";
   document.getElementById("email").value = user.email;
   document.getElementById("password").value = user.password;
   document.getElementById("role").value = user.role;
   document.getElementById("saveUserBtn").classList.add("hidden");
 
-  // Disable form elements
   const formElements = document.getElementById("userForm").elements;
   for (let element of formElements) {
     if (element.closest("#cancelUserBtn")) continue;
@@ -108,10 +104,6 @@ function viewUser(email) {
 
   openModal();
 }
-
-
-
-
 
 async function updateUserInTable(email) {
   const userData = getUserData();
@@ -128,7 +120,10 @@ async function updateUserInTable(email) {
 
 function getUserData() {
   const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value === "" ? "null" : document.getElementById("password").value;
+  const password =
+    document.getElementById("password").value === ""
+      ? "null"
+      : document.getElementById("password").value;
   const role = document.getElementById("role").value;
   return { email: email, password: password, role: role };
 }
@@ -162,8 +157,8 @@ function updateUsersTable() {
                   </td>
                   <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                    <button data-crop-code="${
-                      user.email
-                    }" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
+                     user.email
+                   }" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
                    <button data-email="${
                      user.email
                    }" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
@@ -180,14 +175,12 @@ function updateUsersTable() {
 }
 
 function attachEventListeners() {
-
   document.querySelectorAll(".view-btn").forEach((button) => {
     button.addEventListener("click", (e) => {
       const cropCode = e.target.dataset.cropCode;
       viewUser(cropCode);
     });
   });
-
 
   // Add event listeners for edit buttons
   document.querySelectorAll(".edit-btn").forEach((button) => {
@@ -208,9 +201,12 @@ function attachEventListeners() {
 
 function updateStats() {
   const totalUsers = users.length;
-  const scientistUsers = users.filter((user) => user.role === "SCIENTIST").length;
-  const adminUsers = users.filter((user) => user.role === "ADMINISTRATIVE").length;
-
+  const scientistUsers = users.filter(
+    (user) => user.role === "SCIENTIST"
+  ).length;
+  const adminUsers = users.filter(
+    (user) => user.role === "ADMINISTRATIVE"
+  ).length;
 
   document.getElementById("totalUsers").textContent = totalUsers;
   document.getElementById("scientistUsers").textContent = scientistUsers;
@@ -224,7 +220,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     users = await getAllUsers();
     updateUsersTable();
     updateStats();
-    
+
     setupEmailValidation();
 
     // Set Event Listenres for open and close modal

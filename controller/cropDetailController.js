@@ -29,6 +29,7 @@ function closeModal() {
 }
 
 function resetForm() {
+  document.getElementById("modalTitle").textContent = "Add Log";
   document.getElementById("logForm").reset();
   document.getElementById("logForm").removeAttribute("data-mode");
   document.getElementById("logForm").removeAttribute("data-edit-id");
@@ -671,8 +672,8 @@ function editLog(logCode) {
     document.getElementById("uploadState").classList.add("hidden");
   }
 
+  document.getElementById("modalTitle").textContent = "Edit Log";
   document.getElementById("logCodeContainer").classList.remove("hidden");
-
   document.getElementById("logCode").value = log.logCode;
   document.getElementById("logDate").value = log.logDate;
   document.getElementById("logDetail").value = log.logDetail;
@@ -737,8 +738,8 @@ function viewField(logCode) {
     document.getElementById("uploadState").classList.add("hidden");
   }
 
+  document.getElementById("modalTitle").textContent = "View Log";
   document.getElementById("logCodeContainer").classList.remove("hidden");
-
   document.getElementById("logCode").value = log.logCode;
   document.getElementById("logDate").value = log.logDate;
   document.getElementById("logDetail").value = log.logDetail;

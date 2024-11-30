@@ -23,6 +23,7 @@ function closeModal() {
 }
 
 function resetForm() {
+  document.getElementById("modalTitle").textContent = "Add Field";
   document.getElementById("fieldForm").reset();
   document.getElementById("fieldForm").removeAttribute("data-mode");
   document.getElementById("fieldForm").removeAttribute("data-edit-id");
@@ -210,7 +211,7 @@ function attachRemoveListeners() {
   const selectedFields = document.getElementById("selectedFields");
   selectedFields.querySelectorAll(".remove-staff").forEach((button) => {
     button.addEventListener("click", (e) => {
-      e.stopPropagation(); // Prevent dropdown from opening
+      e.stopPropagation(); 
       const staffId = button.dataset.staffId;
       removeOption(staffId);
     });
@@ -459,10 +460,8 @@ function initializeImageUpload() {
     const file = e.target.files[0];
     if (!file || !file.type.startsWith("image/")) return;
 
-    // Show upload progress
     area.uploadProgress.classList.remove("hidden");
 
-    // Simulate upload progress
     let progress = 0;
     const interval = setInterval(() => {
       progress += Math.random() * 30;
@@ -525,6 +524,9 @@ async function deleteFieldFromTable(id) {
 }
 
 function editField(fieldCode) {
+
+  document.getElementById("modalTitle").textContent = "Edit Field";
+
   const field = fields.find((field) => field.fieldCode === fieldCode);
   if (!field) return;
 
@@ -587,6 +589,9 @@ function editField(fieldCode) {
 }
 
 function viewField(fieldCode) {
+
+  document.getElementById("modalTitle").textContent = "View Field";
+
   const field = fields.find((field) => field.fieldCode === fieldCode);
   if (!field) return;
 

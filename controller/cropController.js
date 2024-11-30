@@ -16,6 +16,7 @@ function closeModal() {
 }
 
 function resetForm() {
+  document.getElementById("modalTitle").textContent = "Add Crop";
   document.getElementById("cropForm").reset();
   document.getElementById("cropForm").removeAttribute("data-mode");
   document.getElementById("cropForm").removeAttribute("data-edit-id");
@@ -306,8 +307,9 @@ async function editCrop(cropCode) {
     document.getElementById("imagePreview").classList.remove("hidden");
     document.getElementById("uploadState").classList.add("hidden");
   }
-  document.getElementById("cropCodeContainer").classList.remove("hidden");
 
+  document.getElementById("modalTitle").textContent = "Edit Crop";
+  document.getElementById("cropCodeContainer").classList.remove("hidden");
   document.getElementById("cropCode").value = crop.cropCode;
   document.getElementById("cropCommonName").value = crop.cropCommonName;
   document.getElementById("cropScientificName").value = crop.cropScientificName;
@@ -331,8 +333,9 @@ function viewCrop(cropCode) {
     document.getElementById("imagePreview").classList.remove("hidden");
     document.getElementById("uploadState").classList.add("hidden");
   }
-  document.getElementById("cropCodeContainer").classList.remove("hidden");
 
+  document.getElementById("modalTitle").textContent = "View Crop";
+  document.getElementById("cropCodeContainer").classList.remove("hidden");
   document.getElementById("cropCode").value = crop.cropCode;
   document.getElementById("cropCommonName").value = crop.cropCommonName;
   document.getElementById("cropScientificName").value = crop.cropScientificName;

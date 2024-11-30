@@ -21,6 +21,7 @@ function closeModal() {
 
 // Form Control
 function resetForm() {
+  document.getElementById("modalTitle").textContent = "Add Staff";
   document.getElementById("staffForm").reset();
   document.getElementById("staffForm").removeAttribute("data-mode");
   document.getElementById("staffForm").removeAttribute("data-edit-id");
@@ -136,6 +137,8 @@ function editStaff(staffId) {
   const staff = staffs.find((s) => s.staffId === staffId);
   if (!staff) return;
 
+  document.getElementById("modalTitle").textContent = "Edit Staff";
+
   document.getElementById("staffIdContainer").classList.remove("hidden");
   document.getElementById("staffId").value = staff.staffId;
 
@@ -165,6 +168,8 @@ function editStaff(staffId) {
 function viewStaff(staffId) {
   const staff = staffs.find((s) => s.staffId === staffId);
   if (!staff) return;
+
+  document.getElementById("modalTitle").textContent = "View Staff";
 
   // Show and populate staff id
   document.getElementById("staffIdContainer").classList.remove("hidden");

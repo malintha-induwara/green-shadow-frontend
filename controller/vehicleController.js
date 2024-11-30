@@ -29,6 +29,7 @@ function resetForm() {
   document.getElementById("vehicleForm").removeAttribute("data-edit-id");
   document.getElementById("vehicleCodeContainer").classList.add("hidden");
   document.getElementById("saveVehicleBtn").classList.remove("hidden");
+  document.getElementById("modalTitle").textContent = "Add Vehicle";
 
   const formElements = document.getElementById("vehicleForm").elements;
   for (let element of formElements) {
@@ -87,6 +88,7 @@ function editVehicle(vehicleCode) {
   );
   if (!vehicle) return;
 
+  document.getElementById("modalTitle").textContent = "Edit Vehicle";
   document.getElementById("vehicleCodeContainer").classList.remove("hidden");
   document.getElementById("vehicleCode").value = vehicle.vehicleCode;
 
@@ -114,6 +116,7 @@ function viewVehicle(vehicleCode) {
   if (!vehicle) return;
 
   // Show and populate vehicle code
+  document.getElementById("modalTitle").textContent = "View Vehicle";
   document.getElementById("vehicleCodeContainer").classList.remove("hidden");
   document.getElementById("vehicleCode").value = vehicle.vehicleCode;
 

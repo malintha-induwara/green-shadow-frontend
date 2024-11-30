@@ -26,6 +26,7 @@ function closeModal() {
 
 // Form Control
 function resetForm() {
+  document.getElementById("modalTitle").textContent = "Add Equipment";
   document.getElementById("equipmentForm").reset();
   document.getElementById("equipmentForm").removeAttribute("data-mode");
   document.getElementById("equipmentForm").removeAttribute("data-edit-id");
@@ -70,10 +71,9 @@ function editEquipment(equipmentId) {
   const item = equipment.find((item) => item.equipmentId === equipmentId);
   if (!item) return;
 
+  document.getElementById("modalTitle").textContent = "Edit Equipment";
   document.getElementById("equipmentIdContainer").classList.remove("hidden");
   document.getElementById("equipmentId").value = item.equipmentId;
-
-  // Populate modal with equipment data
   document.getElementById("equipmentName").value = item.name;
   document.getElementById("equipmentType").value = item.equipmentType;
   document.getElementById("field").value = item.field;
@@ -93,11 +93,9 @@ function viewEquipment(equipmentId) {
   const item = equipment.find((item) => item.equipmentId === equipmentId);
   if (!item) return;
 
-  // Show and populate equipment id
+  document.getElementById("modalTitle").textContent = "View Equipment";
   document.getElementById("equipmentIdContainer").classList.remove("hidden");
   document.getElementById("equipmentId").value = item.equipmentId;
-
-  // Populate modal with equipment data
   document.getElementById("equipmentName").value = item.name;
   document.getElementById("equipmentType").value = item.equipmentType;
   document.getElementById("field").value = item.field;
