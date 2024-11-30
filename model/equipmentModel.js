@@ -1,4 +1,4 @@
-import { getToken } from "../model/authModel.js";
+import { getToken } from "./authModel.js";
 
 const EQUIPMENT_ENDPOINTS = {
   BASE: "http://localhost:8080/api/v1/equipment",
