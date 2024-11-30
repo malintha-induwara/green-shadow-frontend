@@ -37,6 +37,21 @@ function resetForm() {
   }
 }
 
+
+function setupFieldValidation() {
+  const licensePlateInput = document.getElementById("licensePlateNumber");
+
+  licensePlateInput.addEventListener("input", function () {
+    this.setCustomValidity("");
+    const licensePlateRegex = /^[A-Z0-9-]+$/;
+    if (!licensePlateRegex.test(this.value)) {
+      this.setCustomValidity(
+        "License plate can only contain letters, numbers, and hyphens"
+      );
+    }
+  });
+}
+
 async function addVehicleToTheTable() {
   try {
     const vehicleData = getVehicleData();
@@ -76,8 +91,7 @@ function editVehicle(vehicleCode) {
   document.getElementById("vehicleCode").value = vehicle.vehicleCode;
 
   // Populate modal with vehicle data
-  document.getElementById("licensePlateNumber").value =
-    vehicle.licensePlateNumber;
+  document.getElementById("licensePlateNumber").value =vehicle.licensePlateNumber;
   document.getElementById("vehicleCategory").value = vehicle.vehicleCategory;
   document.getElementById("fuelType").value = vehicle.fuelType;
   document.getElementById("staff").value = vehicle.staff;
@@ -261,7 +275,6 @@ function attachEventListeners() {
 }
 
 function updateStats() {
-  // You can add relevant statistics here, such as:
   const totalVehicles = vehicles.length;
   const availableVehicles = vehicles.filter(
     (vehicle) => vehicle.status === "AVAILABLE"
@@ -286,6 +299,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     updateStaffDropdown();
     updateVehiclesTable();
     updateStats();
+
+    setupFieldValidation();
 
     //Set Event Listenres for open and close modal
     document

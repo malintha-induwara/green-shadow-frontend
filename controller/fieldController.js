@@ -58,6 +58,46 @@ function resetForm() {
   }
 }
 
+function setupFieldValidation() {
+  const fieldNameInput = document.getElementById("fieldName");
+  fieldNameInput.addEventListener("input", function () {
+    this.setCustomValidity("");
+    const fieldNameRegex = /^[A-Za-z0-9\s-]+$/;
+    if (!fieldNameRegex.test(this.value)) {
+      this.setCustomValidity(
+        "Field name can only contain letters, numbers, spaces, and hyphens"
+      );
+    }
+  });
+
+  const latitudeInput = document.getElementById("latitude");
+  latitudeInput.addEventListener("input", function () {
+    this.setCustomValidity("");
+    const latitudeRegex = /^-?([0-9]|[1-8][0-9])(\.[0-9]+)?$/;
+    if (!latitudeRegex.test(this.value)) {
+      this.setCustomValidity("Latitude must be a number between -90 and 90");
+    }
+  });
+
+  const longitudeInput = document.getElementById("longitude");
+  longitudeInput.addEventListener("input", function () {
+    this.setCustomValidity("");
+    const longitudeRegex = /^-?([0-9]|[1-9][0-9]|1[0-7][0-9]|180)(\.[0-9]+)?$/;
+    if (!longitudeRegex.test(this.value)) {
+      this.setCustomValidity("Longitude must be a number between -180 and 180");
+    }
+  });
+
+  const extentSizeInput = document.getElementById("extentSize");
+  extentSizeInput.addEventListener("input", function () {
+    this.setCustomValidity("");
+    const extentSizeRegex = /^[0-9]+(\.[0-9]+)?$/;
+    if (!extentSizeRegex.test(this.value)) {
+      this.setCustomValidity("Extent size must be a positive number");
+    }
+  });
+}
+
 const toggleDropdown = () => {
   document.getElementById("dropdown").classList.toggle("hidden");
   document.getElementById("searchInput").focus();
@@ -284,12 +324,11 @@ function getFormData() {
   const extentSize = document.getElementById("extentSize").value;
   const fileInput1 = document.getElementById("fileInput1");
   const fileInput2 = document.getElementById("fileInput2");
-  
 
   const staffIds = selectedOptions
-  .map(option => option.staffId)
-  .filter(Boolean)  // Remove any undefined or null values
-  .join(',');
+    .map((option) => option.staffId)
+    .filter(Boolean) // Remove any undefined or null values
+    .join(",");
 
   const formData = new FormData();
   formData.append("fieldName", fieldName);
@@ -521,7 +560,9 @@ function editField(fieldCode) {
     '[data-field="image2"] #previewImg'
   ).src = `data:image/png;base64,${field.fieldImage2}`;
   document.getElementById("fieldForm").setAttribute("data-mode", "edit");
-  document.getElementById("fieldForm").setAttribute("data-edit-id", field.fieldCode);
+  document
+    .getElementById("fieldForm")
+    .setAttribute("data-edit-id", field.fieldCode);
 
   // Set selected staff members
   if (field.staff && Array.isArray(field.staff)) {
@@ -615,27 +656,28 @@ function viewField(fieldCode) {
 function updateStats() {
   const totalFields = fields.length;
   const totalArea = fields.reduce((acc, field) => acc + field.extentSize, 0);
-  const activeStaff = fields.reduce((acc, field) => acc + field.staff.length, 0);
+  const activeStaff = fields.reduce(
+    (acc, field) => acc + field.staff.length,
+    0
+  );
 
   document.getElementById("totalFields").textContent = totalFields;
   document.getElementById("totalArea").textContent = totalArea;
   document.getElementById("activeStaff").textContent = activeStaff;
 }
 
-
 async function addFieldToTheTable() {
-    const formData = getFormData();
-    try {
-      const newField = await createField(formData);
-      fields.push(newField);
-      updateFieldsTable();
-      updateStats();
-    } catch (error) {
-      console.error(error);
-      alert("Failed to add field");
-    }
+  const formData = getFormData();
+  try {
+    const newField = await createField(formData);
+    fields.push(newField);
+    updateFieldsTable();
+    updateStats();
+  } catch (error) {
+    console.error(error);
+    alert("Failed to add field");
+  }
 }
-
 
 async function updateFieldInTheTable(editId) {
   const formData = getFormData();
@@ -662,6 +704,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     updateStaffDropdown();
     updateStats();
 
+    setupFieldValidation();
+
     // Set Event Listeners for open and close modal
     document.getElementById("addFieldBtn").addEventListener("click", openModal);
     document
@@ -686,7 +730,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           const editId = e.target.getAttribute("data-edit-id");
           await updateFieldInTheTable(editId);
         } else {
-           await addFieldToTheTable();
+          await addFieldToTheTable();
         }
         closeModal();
       });

@@ -34,6 +34,77 @@ function resetForm() {
   }
 }
 
+
+function setupFieldValidation() {
+
+  const firstNameInput = document.getElementById("firstName");
+  firstNameInput.addEventListener("input", function () {
+    this.setCustomValidity("");
+    const nameRegex = /^[A-Za-z]+(?:\s[A-Za-z]+)*$/;
+    if (!nameRegex.test(this.value)) {
+      this.setCustomValidity("First name can only contain letters and single spaces between words");
+    }
+  });
+
+
+  const lastNameInput = document.getElementById("lastName");
+  lastNameInput.addEventListener("input", function () {
+    this.setCustomValidity("");
+    const nameRegex = /^[A-Za-z]+(?:\s[A-Za-z]+)*$/;
+    if (!nameRegex.test(this.value)) {
+      this.setCustomValidity("Last name can only contain letters and single spaces between words");
+    }
+  });
+
+
+  const designationInput = document.getElementById("designation");
+  designationInput.addEventListener("input", function () {
+    this.setCustomValidity("");
+    const designationRegex = /^[A-Za-z]+(?:\s[A-Za-z]+)*$/;
+    if (!designationRegex.test(this.value)) {
+      this.setCustomValidity("Designation can only contain letters and single spaces between words");
+    }
+  });
+
+
+  const contactNoInput = document.getElementById("contactNo");
+  contactNoInput.addEventListener("input", function () {
+    this.setCustomValidity("");
+    const contactRegex = /^(\+)?[\d\s-]+$/;
+    if (!contactRegex.test(this.value)) {
+      this.setCustomValidity("Contact number can only contain digits, spaces, hyphens, and an optional + at the start");
+    }
+  });
+
+
+  const addressInputs = [
+    "addressLine01", "addressLine02", "addressLine03", 
+    "addressLine04", "addressLine05"
+  ];
+
+  addressInputs.forEach(inputId => {
+    const addressInput = document.getElementById(inputId);
+    addressInput.addEventListener("input", function () {
+      this.setCustomValidity("");
+      const addressRegex = /^[A-Za-z0-9\s,.-]+$/;
+      if (this.value && !addressRegex.test(this.value)) {
+        this.setCustomValidity("Address can only contain letters, numbers, spaces, and basic punctuation");
+      }
+    });
+  });
+
+
+  const emailInput = document.getElementById("email");
+  emailInput.addEventListener("input", function () {
+    this.setCustomValidity("");
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(this.value)) {
+      this.setCustomValidity("Please enter a valid email address");
+    }
+  });
+}
+
+
 async function addStaffToTheTable() {
   try {
     const staffData = getStaffData();
@@ -282,6 +353,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     staffs = await getAllStaff();
     updateStaffTable();
     updateStats();
+
+    setupFieldValidation();
 
     // Set Event Listeners for open and close modal
     document.getElementById("addStaffBtn").addEventListener("click", openModal);

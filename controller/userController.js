@@ -32,6 +32,17 @@ function resetForm() {
   }
 }
 
+function setupEmailValidation() {
+  const emailInput = document.getElementById("email");
+  emailInput.addEventListener("input", function () {
+    this.setCustomValidity("");
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(this.value)) {
+      this.setCustomValidity("Please enter a valid email address");
+    }
+  });
+}
+
 async function addUserToTable() {
   try {
     const userData = getUserData();
@@ -213,6 +224,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     users = await getAllUsers();
     updateUsersTable();
     updateStats();
+    
+    setupEmailValidation();
 
     // Set Event Listenres for open and close modal
     document.getElementById("addUserBtn").addEventListener("click", openModal);
