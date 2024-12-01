@@ -8,6 +8,12 @@ import {
 import { getAllStaff } from "../model/staffModel.js";
 import { getAllFields } from "../model/fieldModel.js";
 
+
+let currentSort = {
+  field: 'equipmentId',
+  direction: 'asc'
+};
+
 let equipment = [];
 let staffs = [];
 let fields = [];
@@ -39,6 +45,54 @@ function resetForm() {
     element.disabled = false;
   }
 }
+
+function initializeEquipmentSortHeaders() {
+  const headers = document.querySelectorAll('th[data-sortable]');
+  headers.forEach(header => {
+    header.addEventListener('click', () => handleEquipmentHeaderClick(header));
+  });
+}
+
+function handleEquipmentHeaderClick(header) {
+  const field = header.getAttribute('data-field');
+
+  if (field === currentSort.field) {
+    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentSort.field = field;
+    currentSort.direction = 'asc';
+  }
+
+  updateEquipmentSortIndicators();
+  updateEquipmentTable();
+}
+
+function updateEquipmentSortIndicators() {
+  const headers = document.querySelectorAll('th[data-sortable]');
+  headers.forEach(header => {
+    const field = header.getAttribute('data-field');
+    const existingIcon = header.querySelector('.sort-icon');
+
+    if (existingIcon) existingIcon.remove();
+
+    if (field === currentSort.field) {
+      const icon = document.createElement('span');
+      icon.className = 'sort-icon ml-1 inline-block';
+
+      icon.innerHTML = currentSort.direction === 'asc'
+        ? `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+           </svg>`
+        : `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+           </svg>`;
+
+      header.appendChild(icon);
+    }
+  });
+}
+
+
 
 async function addEquipmentToTable() {
   try {
@@ -179,8 +233,17 @@ function updateFieldsDropdown() {
 }
 
 function updateEquipmentTable() {
+  const sortedEquipment = [...equipment].sort((a, b) => {
+    let comparison = 0;
+    const aVal = a[currentSort.field] === null ? '' : String(a[currentSort.field]);
+    const bVal = b[currentSort.field] === null ? '' : String(b[currentSort.field]);
+
+    comparison = aVal.localeCompare(bVal);
+
+    return currentSort.direction === 'asc' ? comparison : -comparison;
+  });
   const tbody = document.getElementById("equipmentTable");
-  tbody.innerHTML = equipment
+  tbody.innerHTML = sortedEquipment
     .map(
       (item) => `
       <tr>
@@ -284,6 +347,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     updateFieldsDropdown();
     updateEquipmentTable();
     updateStats();
+
+    initializeEquipmentSortHeaders();
 
     document
       .getElementById("addEquipmentBtn")

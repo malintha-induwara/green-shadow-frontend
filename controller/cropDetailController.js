@@ -8,6 +8,13 @@ import { getAllStaff } from "../model/staffModel.js";
 import { getAllFields } from "../model/fieldModel.js";
 import { getAllCrops } from "../model/cropModel.js";
 
+
+let currentLogSort = {
+  field: 'logCode',
+  direction: 'asc'
+};
+
+
 let cropDetailLogs = [];
 let staff = [];
 let fields = [];
@@ -54,6 +61,52 @@ function resetForm() {
     if (element.closest("#logCodeContainer")) continue;
     element.disabled = false;
   }
+}
+
+function initializeLogSortHeaders() {
+  const headers = document.querySelectorAll('th[data-sortable]');
+  headers.forEach(header => {
+    header.addEventListener('click', () => handleLogHeaderClick(header));
+  });
+}
+
+function handleLogHeaderClick(header) {
+  const field = header.getAttribute('data-field');
+
+  if (field === currentLogSort.field) {
+    currentLogSort.direction = currentLogSort.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentLogSort.field = field;
+    currentLogSort.direction = 'asc';
+  }
+
+  updateLogSortIndicators();
+  updateLogTable();
+}
+
+function updateLogSortIndicators() {
+  const headers = document.querySelectorAll('th[data-sortable]');
+  headers.forEach(header => {
+    const field = header.getAttribute('data-field');
+    const existingIcon = header.querySelector('.sort-icon');
+
+    if (existingIcon) existingIcon.remove();
+
+    if (field === currentLogSort.field) {
+      const icon = document.createElement('span');
+      icon.className = 'sort-icon ml-1 inline-block';
+
+      icon.innerHTML = currentLogSort.direction === 'asc'
+        ? `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+           </svg>`
+        : `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+           </svg>`;
+
+      header.appendChild(icon);
+    }
+  });
 }
 
 const toggleStaffDropdown = () => {
@@ -423,53 +476,52 @@ function removeCropOption(cropId) {
   renderCropOptions(document.getElementById("cropSearchInput").value);
 }
 
+
 function updateLogTable() {
+  const sortedLogs = [...cropDetailLogs].sort((a, b) => {
+    let comparison = 0;
+    let aVal = a[currentLogSort.field];
+    let bVal = b[currentLogSort.field];
+
+    if (currentLogSort.field === 'logDate') {
+      aVal = new Date(a.logDate);
+      bVal = new Date(b.logDate);
+    }
+
+    comparison = String(aVal).localeCompare(String(bVal), undefined, { numeric: true });
+    return currentLogSort.direction === 'asc' ? comparison : -comparison;
+  });
+
   const tbody = document.getElementById("logTable");
-  tbody.innerHTML = cropDetailLogs
+  tbody.innerHTML = sortedLogs
     .map(
       (cropDetailLog) => `
-                  <tr>
-                    <td class="px-6 py-2 whitespace-nowrap">
-                      <div class="text-sm font-medium text-gray-900">${
-                        cropDetailLog.logCode
-                      }</div>
-                    </td>
-                    <td class="px-6 py-2 whitespace-nowrap">
-                      <div class="text-sm text-gray-900">${
-                        cropDetailLog.logDate
-                      }</div>
-                    </td>
-                    <td class="px-6 py-2 whitespace-nowrap">
-                      <div class="text-sm text-gray-900">${
-                        cropDetailLog.logDetail
-                      }</div>
-                    </td>
-                    <td class="px-6 py-2 whitespace-nowrap">
-                      <div class="flex items-center justify-center">
-                        <img 
-                          src="${
-                            cropDetailLog.observedImage
-                              ? `data:image/png;base64,${cropDetailLog.observedImage}`
-                              : "/assets/images/noImage.png"
-                          }" 
-                          alt="Observed Image"
-                          class="h-16 w-24 rounded-lg object-cover shadow-sm"
-                        />
-                      </div>
-                    </td>
-                    <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500">
-                      <button data-log-code="${
-                        cropDetailLog.logCode
-                      }" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
-                      <button data-log-code="${
-                        cropDetailLog.logCode
-                      }" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                      <button data-log-code="${
-                        cropDetailLog.logCode
-                      }" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
-                    </td>
-                  </tr>
-                `
+        <tr>
+          <td class="px-6 py-2 whitespace-nowrap">
+            <div class="text-sm font-medium text-gray-900">${cropDetailLog.logCode}</div>
+          </td>
+          <td class="px-6 py-2 whitespace-nowrap">
+            <div class="text-sm text-gray-900">${cropDetailLog.logDate}</div>
+          </td>
+          <td class="px-6 py-2 whitespace-nowrap">
+            <div class="text-sm text-gray-900">${cropDetailLog.logDetail}</div>
+          </td>
+          <td class="px-6 py-2 whitespace-nowrap">
+            <div class="flex items-center justify-center">
+              <img 
+                src="${cropDetailLog.observedImage ? `data:image/png;base64,${cropDetailLog.observedImage}` : '/assets/images/noImage.png'}"
+                alt="Observed Image"
+                class="h-16 w-24 rounded-lg object-cover shadow-sm"
+              />
+            </div>
+          </td>
+          <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500">
+            <button data-log-code="${cropDetailLog.logCode}" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
+            <button data-log-code="${cropDetailLog.logCode}" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+            <button data-log-code="${cropDetailLog.logCode}" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
+          </td>
+        </tr>
+      `
     )
     .join("");
 
@@ -870,6 +922,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     updateFieldDropdown();
     updateCropDropdown();
     updateStats();
+
+    initializeLogSortHeaders();
 
     //Set Event Listeners for open and close modal
     document.getElementById("addLogBtn").addEventListener("click", openModal);

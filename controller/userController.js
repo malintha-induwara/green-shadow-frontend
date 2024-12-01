@@ -5,6 +5,10 @@ import {
   deleteUser,
 } from "../model/userModel.js";
 
+let currentSort = {
+  field: 'email',
+  direction: 'asc'
+};
 let users = [];
 
 // Modal Control
@@ -31,6 +35,52 @@ function resetForm() {
   for (let element of formElements) {
     element.disabled = false;
   }
+}
+
+function initializeUserSortHeaders() {
+  const headers = document.querySelectorAll('th[data-sortable]');
+  headers.forEach(header => {
+    header.addEventListener('click', () => handleUserHeaderClick(header));
+  });
+}
+
+function handleUserHeaderClick(header) {
+  const field = header.getAttribute('data-field');
+  
+  if (field === currentSort.field) {
+    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentSort.field = field;
+    currentSort.direction = 'asc';
+  }
+
+  updateUserSortIndicators();
+  updateUsersTable();
+}
+
+function updateUserSortIndicators() {
+  const headers = document.querySelectorAll('th[data-sortable]');
+  headers.forEach(header => {
+    const field = header.getAttribute('data-field');
+    const existingIcon = header.querySelector('.sort-icon');
+
+    if (existingIcon) existingIcon.remove();
+
+    if (field === currentSort.field) {
+      const icon = document.createElement('span');
+      icon.className = 'sort-icon ml-1 inline-block';
+
+      icon.innerHTML = currentSort.direction === 'asc'
+        ? `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+           </svg>`
+        : `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+           </svg>`;
+
+      header.appendChild(icon);
+    }
+  });
 }
 
 function setupEmailValidation() {
@@ -131,15 +181,23 @@ function getUserData() {
 // UI Updates
 
 function updateUsersTable() {
+  const sortedUsers = [...users].sort((a, b) => {
+    let comparison = 0;
+    const aVal = a[currentSort.field] === null ? '' : String(a[currentSort.field]);
+    const bVal = b[currentSort.field] === null ? '' : String(b[currentSort.field]);
+    
+    comparison = aVal.localeCompare(bVal);
+    
+    return currentSort.direction === 'asc' ? comparison : -comparison;
+  });
+
   const tbody = document.getElementById("userTable");
-  tbody.innerHTML = users
+  tbody.innerHTML = sortedUsers
     .map(
       (user) => `
                 <tr>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900">${
-                      user.email
-                    }</div>
+                    <div class="text-sm font-medium text-gray-900">${user.email}</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
@@ -156,15 +214,9 @@ function updateUsersTable() {
                     </span>
                   </td>
                   <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                   <button data-crop-code="${
-                     user.email
-                   }" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
-                   <button data-email="${
-                     user.email
-                   }" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                    <button data-email="${
-                      user.email
-                    }" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
+                   <button data-email="${user.email}" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
+                   <button data-email="${user.email}" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                   <button data-email="${user.email}" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
                   </td>
                 </tr>
               `
@@ -222,6 +274,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     updateStats();
 
     setupEmailValidation();
+    initializeUserSortHeaders();
 
     // Set Event Listenres for open and close modal
     document.getElementById("addUserBtn").addEventListener("click", openModal);

@@ -6,6 +6,12 @@ import {
 } from "../model/fieldModel.js";
 import { getAllStaff } from "../model/staffModel.js";
 
+
+let currentSort = {
+  field: 'fieldCode',
+  direction: 'asc'
+};
+
 let fields = [];
 let staffs = [];
 let selectedOptions = [];
@@ -57,6 +63,52 @@ function resetForm() {
     if (element.closest("#fieldCodeContainer")) continue;
     element.disabled = false;
   }
+}
+
+function initializeFieldSortHeaders() {
+  const headers = document.querySelectorAll('th[data-sortable]');
+  headers.forEach(header => {
+    header.addEventListener('click', () => handleFieldHeaderClick(header));
+  });
+}
+
+function handleFieldHeaderClick(header) {
+  const field = header.getAttribute('data-field');
+
+  if (field === currentSort.field) {
+    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentSort.field = field;
+    currentSort.direction = 'asc';
+  }
+
+  updateFieldSortIndicators();
+  updateFieldsTable();
+}
+
+function updateFieldSortIndicators() {
+  const headers = document.querySelectorAll('th[data-sortable]');
+  headers.forEach(header => {
+    const field = header.getAttribute('data-field');
+    const existingIcon = header.querySelector('.sort-icon');
+
+    if (existingIcon) existingIcon.remove();
+
+    if (field === currentSort.field) {
+      const icon = document.createElement('span');
+      icon.className = 'sort-icon ml-1 inline-block';
+
+      icon.innerHTML = currentSort.direction === 'asc'
+        ? `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+           </svg>`
+        : `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+           </svg>`;
+
+      header.appendChild(icon);
+    }
+  });
 }
 
 function setupFieldValidation() {
@@ -225,70 +277,68 @@ function removeOption(staffId) {
 }
 
 function updateFieldsTable() {
+
+  const sortedFields = [...fields].sort((a, b) => {
+    let comparison = 0;
+    let aVal = '';
+    let bVal = '';
+
+    if (currentSort.field === 'fieldLocation') {
+      aVal = a.fieldLocation.x + a.fieldLocation.y;
+      bVal = b.fieldLocation.x + b.fieldLocation.y;
+    } else {
+      aVal = a[currentSort.field] ?? '';
+      bVal = b[currentSort.field] ?? '';
+    }
+
+    comparison = String(aVal).localeCompare(String(bVal), undefined, { numeric: true });
+    return currentSort.direction === 'asc' ? comparison : -comparison;
+  });
+
   const tbody = document.getElementById("fieldTable");
-  tbody.innerHTML = fields
+  tbody.innerHTML = sortedFields
     .map(
       (field) => `
-                  <tr>
-                    <td class="px-6 py-2 whitespace-nowrap">
-                      <div class="text-sm font-medium text-gray-900">${
-                        field.fieldCode
-                      }</div>
-                    </td>
-                    <td class="px-6 py-2 whitespace-nowrap">
-                      <div class="text-sm text-gray-900">${
-                        field.fieldName
-                      }</div>
-                    </td>
-                    <td class="px-6 py-2 whitespace-nowrap">
-                      <div class="text-sm text-gray-900">
-                      X: ${field.fieldLocation.x}, Y: ${field.fieldLocation.y}
-                      </div>
-                    </td>
-                    <td class="px-6 py-2 whitespace-nowrap">
-                      <div class="text-sm text-gray-900">${
-                        field.extentSize
-                      } ha</div>
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap">
-                      <div class="flex items-center justify-center">
-                        <img 
-                          src="${
-                            field.fieldImage1
-                              ? `data:image/png;base64,${field.fieldImage1}`
-                              : "/assets/images/noImage.png"
-                          }" 
-                          alt="Field Image 1"
-                          class="h-16 w-24 rounded-lg object-cover shadow-sm"
-                        />
-                      </div>
-                    </td>
-                    <td class="px-2 py-2 whitespace-nowrap">
-                      <div class="flex items-center justify-center">
-                        <img 
-                          src="${
-                            field.fieldImage2
-                              ? `data:image/png;base64,${field.fieldImage2}`
-                              : "/assets/images/noImage.png"
-                          }" 
-                          alt="Field Image 2"
-                          class="h-16 w-24 rounded-lg object-cover shadow-sm"
-                        />
-                         </div>
-                    </td>
-                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-                      <button data-field-code="${
-                        field.fieldCode
-                      }" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
-                      <button data-field-code="${
-                        field.fieldCode
-                      }" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                      <button data-field-code="${
-                        field.fieldCode
-                      }" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
-                    </td>
-                  </tr>
-                `
+        <tr>
+          <td class="px-6 py-2 whitespace-nowrap">
+            <div class="text-sm font-medium text-gray-900">${field.fieldCode}</div>
+          </td>
+          <td class="px-6 py-2 whitespace-nowrap">
+            <div class="text-sm text-gray-900">${field.fieldName}</div>
+          </td>
+          <td class="px-6 py-2 whitespace-nowrap">
+            <div class="text-sm text-gray-900">
+              X: ${field.fieldLocation.x}, Y: ${field.fieldLocation.y}
+            </div>
+          </td>
+          <td class="px-6 py-2 whitespace-nowrap">
+            <div class="text-sm text-gray-900">${field.extentSize} ha</div>
+          </td>
+          <td class="px-2 py-2 whitespace-nowrap">
+            <div class="flex items-center justify-center">
+              <img 
+                src="${field.fieldImage1 ? `data:image/png;base64,${field.fieldImage1}` : '/assets/images/noImage.png'}"
+                alt="Field Image 1"
+                class="h-16 w-24 rounded-lg object-cover shadow-sm"
+              />
+            </div>
+          </td>
+          <td class="px-2 py-2 whitespace-nowrap">
+            <div class="flex items-center justify-center">
+              <img 
+                src="${field.fieldImage2 ? `data:image/png;base64,${field.fieldImage2}` : '/assets/images/noImage.png'}"
+                alt="Field Image 2"
+                class="h-16 w-24 rounded-lg object-cover shadow-sm"
+              />
+            </div>
+          </td>
+          <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+            <button data-field-code="${field.fieldCode}" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
+            <button data-field-code="${field.fieldCode}" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+            <button data-field-code="${field.fieldCode}" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
+          </td>
+        </tr>
+      `
     )
     .join("");
 
@@ -710,6 +760,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     updateStats();
 
     setupFieldValidation();
+    initializeFieldSortHeaders();
 
     // Set Event Listeners for open and close modal
     document.getElementById("addFieldBtn").addEventListener("click", openModal);

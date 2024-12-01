@@ -7,6 +7,11 @@ import {
 
 import { getAllStaff } from "../model/staffModel.js";
 
+
+let currentSort = {
+  field: 'vehicleCode',
+  direction: 'asc'
+};
 let vehicles = [];
 let staffs = [];
 
@@ -36,6 +41,55 @@ function resetForm() {
     if (element.closest("#vehicleCodeContainer")) continue;
     element.disabled = false;
   }
+}
+
+function initializeSortHeaders() {
+  const headers = document.querySelectorAll('th[data-sortable]');
+  headers.forEach(header => {
+    header.addEventListener('click', () => handleHeaderClick(header));
+  });
+}
+
+function handleHeaderClick(header) {
+  const field = header.getAttribute('data-field');
+  
+  if (field === currentSort.field) {
+    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentSort.field = field;
+    currentSort.direction = 'asc';
+  }
+
+  updateSortIndicators();
+  updateVehiclesTable();
+}
+
+
+function updateSortIndicators() {
+  const headers = document.querySelectorAll('th[data-sortable]');
+  headers.forEach(header => {
+    const field = header.getAttribute('data-field');
+    
+    const existingIcon = header.querySelector('.sort-icon');
+    if (existingIcon) {
+      existingIcon.remove();
+    }
+    
+    if (field === currentSort.field) {
+      const icon = document.createElement('span');
+      icon.className = 'sort-icon ml-1 inline-block';
+      
+      icon.innerHTML = currentSort.direction === 'asc' 
+        ? `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+           </svg>`
+        : `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+           </svg>`;
+      
+      header.appendChild(icon);
+    }
+  });
 }
 
 
@@ -193,56 +247,50 @@ function updateStaffDropdown() {
 }
 
 function updateVehiclesTable() {
+  const sortedVehicles = [...vehicles].sort((a, b) => {
+    let comparison = 0;
+    const aVal = String(a[currentSort.field]);
+    const bVal = String(b[currentSort.field]);
+    
+    comparison = aVal.localeCompare(bVal);
+    
+    return currentSort.direction === 'asc' ? comparison : -comparison;
+  });
+
   const tbody = document.getElementById("vehicleTable");
-  tbody.innerHTML = vehicles
+  tbody.innerHTML = sortedVehicles
     .map(
       (vehicle) => `
               <tr>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">${
-                    vehicle.vehicleCode
-                  }</div>
+                  <div class="text-sm font-medium text-gray-900">${vehicle.vehicleCode}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">${
-                    vehicle.licensePlateNumber
-                  }</div>
+                  <div class="text-sm text-gray-900">${vehicle.licensePlateNumber}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">${
-                    vehicle.vehicleCategory
-                  }</div>
+                  <div class="text-sm text-gray-900">${vehicle.vehicleCategory}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm text-gray-900">${vehicle.fuelType}</div>
                 </td>
                 <td class="px-4 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">${
-                    vehicle.staff === null ? "No" : vehicle.staff
-                  }</div>
+                  <div class="text-sm text-gray-900">${vehicle.staff === null ? "No" : vehicle.staff}</div>
                 </td>
                 <td class="px-4 py-4 whitespace-nowrap">
                   <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                    ${
-                      vehicle.status === "AVAILABLE"
-                        ? "bg-green-100 text-green-800"
-                        : vehicle.status === "UNAVAILABLE"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-gray-100 text-gray-800"
-                    }">
+                    ${vehicle.status === "AVAILABLE"
+                      ? "bg-green-100 text-green-800"
+                      : vehicle.status === "UNAVAILABLE"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-gray-100 text-gray-800"}">
                     ${vehicle.status}
                   </span>
                 </td>
                 <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                 <button data-vehicle-code="${
-                   vehicle.vehicleCode
-                 }" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
-                 <button data-vehicle-code="${
-                   vehicle.vehicleCode
-                 }" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                  <button data-vehicle-code="${
-                    vehicle.vehicleCode
-                  }" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
+                  <button data-vehicle-code="${vehicle.vehicleCode}" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
+                  <button data-vehicle-code="${vehicle.vehicleCode}" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                  <button data-vehicle-code="${vehicle.vehicleCode}" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
                 </td>
               </tr>
             `
@@ -304,6 +352,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     updateStats();
 
     setupFieldValidation();
+    initializeSortHeaders();
 
     //Set Event Listenres for open and close modal
     document
