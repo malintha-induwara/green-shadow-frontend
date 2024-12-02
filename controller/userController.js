@@ -24,7 +24,6 @@ let currentSort = {
 };
 let users = [];
 
-// Modal Control
 function openModal() {
   const modal = document.getElementById("userModal");
   modal.classList.remove("hidden");
@@ -36,7 +35,6 @@ function closeModal() {
   resetForm();
 }
 
-// Form Control
 function resetForm() {
   document.getElementById("userForm").reset();
   document.getElementById("userForm").removeAttribute("data-mode");
@@ -228,7 +226,6 @@ function getUserData() {
   return { email: email, password: password, role: role };
 }
 
-// UI Updates
 
 function updateUsersTable() {
   const sortedUsers = [...users].sort((a, b) => {
@@ -294,7 +291,6 @@ function attachEventListeners() {
     });
   });
 
-  // Add event listeners for edit buttons
   document.querySelectorAll(".edit-btn").forEach((button) => {
     button.addEventListener("click", (e) => {
       const email = e.target.dataset.email;
@@ -302,7 +298,6 @@ function attachEventListeners() {
     });
   });
 
-  // Add event listeners for delete buttons
   document.querySelectorAll(".delete-btn").forEach((button) => {
     button.addEventListener("click", (e) => {
       const email = e.target.dataset.email;
@@ -325,10 +320,8 @@ function updateStats() {
   document.getElementById("adminUsers").textContent = adminUsers;
 }
 
-// Event Listeners
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    // Fetch users from API
     users = await getAllUsers();
     updateUsersTable();
     updateStats();
@@ -336,7 +329,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupEmailValidation();
     initializeUserSortHeaders();
 
-    // Set Event Listenres for open and close modal
     document.getElementById("addUserBtn").addEventListener("click", openModal);
     document
       .getElementById("cancelUserBtn")
@@ -349,7 +341,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
 
-    // Form submission handling
     document.getElementById("userForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const mode = e.target.getAttribute("data-mode");

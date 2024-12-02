@@ -30,7 +30,6 @@ let equipment = [];
 let staffs = [];
 let fields = [];
 
-// Modal Control
 function openModal() {
   const modal = document.getElementById("equipmentModal");
   modal.classList.remove("hidden");
@@ -42,7 +41,6 @@ function closeModal() {
   resetForm();
 }
 
-// Form Control
 function resetForm() {
   document.getElementById("modalTitle").textContent = "Add Equipment";
   document.getElementById("equipmentForm").reset();
@@ -171,7 +169,6 @@ function editEquipment(equipmentId) {
   document.getElementById("staff").value = item.staff || "null";
   document.getElementById("status").value = item.status;
 
-  // Change form mode to edit
   document.getElementById("equipmentForm").setAttribute("data-mode", "edit");
   document
     .getElementById("equipmentForm")
@@ -250,7 +247,6 @@ function getEquipmentData() {
   };
 }
 
-// UI Updates
 function updateStaffDropdown() {
   const staff = document.getElementById("staff");
   staff.innerHTML = `
@@ -383,7 +379,6 @@ function updateStats() {
     unavailableEquipment;
 }
 
-// Event Listeners
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     equipment = await getAllEquipment();
@@ -404,14 +399,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       .getElementById("cancelEquipmentBtn")
       .addEventListener("click", closeModal);
 
-    // Close modal when clicking outside
     document.getElementById("equipmentModal").addEventListener("click", (e) => {
       if (e.target.id === "equipmentModal") {
         closeModal();
       }
     });
 
-    // Form submission handling
     document.getElementById("equipmentForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const mode = e.target.getAttribute("data-mode");

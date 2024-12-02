@@ -4,7 +4,8 @@ import { getRole,getToken } from '../model/authModel.js';
 const rolePermissions = {
   MANAGER: ['dashboard', 'crop', 'cropDetail', 'equipment', 'field', 'staff', 'user', 'vehicle'],
   SCIENTIST: ['dashboard', 'crop', 'cropDetail'],
-  ADMINISTRATOR: ['dashboard', 'equipment', 'staff', 'user', 'vehicle']
+  ADMINISTRATOR: ['dashboard', 'equipment', 'staff', 'user', 'vehicle'],
+  OTHER: ['dashboard']
 };
 
 

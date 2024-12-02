@@ -245,7 +245,7 @@ function removeStaffOption(staffId) {
   renderStaffOptions(document.getElementById("staffSearchInput").value);
 }
 
-// Field Dropdown Functions
+
 const toggleFieldDropdown = () => {
   document.getElementById("fieldDropdown").classList.toggle("hidden");
   document.getElementById("fieldSearchInput").focus();
@@ -367,7 +367,7 @@ function removeFieldOption(fieldId) {
   renderFieldOptions(document.getElementById("fieldSearchInput").value);
 }
 
-// Crop Dropdown Functions
+
 const toggleCropDropdown = () => {
   document.getElementById("cropDropdown").classList.toggle("hidden");
   document.getElementById("cropSearchInput").focus();
@@ -642,7 +642,7 @@ function initializeImageUpload() {
   dropZone.addEventListener("drop", handleDrop, false);
   fileInput.addEventListener("change", handleFiles, false);
   removeImageBtn.addEventListener("click", (e) => {
-    e.preventDefault(); // Prevent form submission
+    e.preventDefault(); 
     removeImage();
   });
 
@@ -986,7 +986,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     initializeLogSortHeaders();
 
-    //Set Event Listeners for open and close modal
+    
     document.getElementById("addLogBtn").addEventListener("click", openModal);
     document
       .getElementById("cancelLogBtn")

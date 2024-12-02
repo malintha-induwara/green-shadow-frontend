@@ -27,7 +27,6 @@ let currentSort = {
 let vehicles = [];
 let staffs = [];
 
-// Modal Control
 function openModal() {
   const modal = document.getElementById("vehicleModal");
   modal.classList.remove("hidden");
@@ -39,7 +38,6 @@ function closeModal() {
   resetForm();
 }
 
-// Form Control
 function resetForm() {
   document.getElementById("vehicleForm").reset();
   document.getElementById("vehicleForm").removeAttribute("data-mode");
@@ -186,7 +184,6 @@ function editVehicle(vehicleCode) {
   document.getElementById("vehicleCodeContainer").classList.remove("hidden");
   document.getElementById("vehicleCode").value = vehicle.vehicleCode;
 
-  // Populate modal with vehicle data
   document.getElementById("licensePlateNumber").value =vehicle.licensePlateNumber;
   document.getElementById("vehicleCategory").value = vehicle.vehicleCategory;
   document.getElementById("fuelType").value = vehicle.fuelType;
@@ -194,7 +191,6 @@ function editVehicle(vehicleCode) {
   document.getElementById("status").value = vehicle.status;
   document.getElementById("remarks").value = vehicle.remarks || "";
 
-  // Change form mode to edit
   document.getElementById("vehicleForm").setAttribute("data-mode", "edit");
   document
     .getElementById("vehicleForm")
@@ -209,12 +205,10 @@ function viewVehicle(vehicleCode) {
   );
   if (!vehicle) return;
 
-  // Show and populate vehicle code
   document.getElementById("modalTitle").textContent = "View Vehicle";
   document.getElementById("vehicleCodeContainer").classList.remove("hidden");
   document.getElementById("vehicleCode").value = vehicle.vehicleCode;
 
-  // Populate modal with vehicle data
   document.getElementById("licensePlateNumber").value =
     vehicle.licensePlateNumber;
   document.getElementById("vehicleCategory").value = vehicle.vehicleCategory;
@@ -280,8 +274,6 @@ function getVehicleData() {
    remarks:  remarks,
   };
 }
-
-// UI Updates
 
 function updateStaffDropdown() {
   const staff = document.getElementById("staff");
@@ -358,7 +350,6 @@ function attachEventListeners() {
     });
   });
 
-  // Add event listeners for edit buttons
   document.querySelectorAll(".edit-btn").forEach((button) => {
     button.addEventListener("click", (e) => {
       const vehicleCode = e.target.dataset.vehicleCode;
@@ -366,7 +357,6 @@ function attachEventListeners() {
     });
   });
 
-  // Add event listeners for delete buttons
   document.querySelectorAll(".delete-btn").forEach((button) => {
     button.addEventListener("click", (e) => {
       const vehicleCode = e.target.dataset.vehicleCode;
@@ -390,10 +380,8 @@ function updateStats() {
     unavailableVehicles;
 }
 
-// Event Listeners
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    // Fetch vehicles from API
     vehicles = await getAllVehicles();
     staffs = await getAllStaff();
 
@@ -404,7 +392,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupFieldValidation();
     initializeSortHeaders();
 
-    //Set Event Listenres for open and close modal
     document
       .getElementById("addVehicleBtn")
       .addEventListener("click", openModal);
@@ -419,7 +406,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
 
-    // Form submission handling
     document.getElementById("vehicleForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const mode = e.target.getAttribute("data-mode");

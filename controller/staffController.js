@@ -26,7 +26,6 @@ let currentSort = {
 
 let staffs = [];
 
-// Modal Control
 function openModal() {
   const modal = document.getElementById("staffModal");
   modal.classList.remove("hidden");
@@ -38,7 +37,6 @@ function closeModal() {
   resetForm();
 }
 
-// Form Control
 function resetForm() {
   document.getElementById("modalTitle").textContent = "Add Staff";
   document.getElementById("staffForm").reset();
@@ -241,7 +239,6 @@ function editStaff(staffId) {
   document.getElementById("staffIdContainer").classList.remove("hidden");
   document.getElementById("staffId").value = staff.staffId;
 
-  // Populate modal with staff data
   document.getElementById("firstName").value = staff.firstName;
   document.getElementById("lastName").value = staff.lastName;
   document.getElementById("designation").value = staff.designation;
@@ -257,7 +254,6 @@ function editStaff(staffId) {
   document.getElementById("email").value = staff.email;
   document.getElementById("role").value = staff.role;
 
-  // Change form mode to edit
   document.getElementById("staffForm").setAttribute("data-mode", "edit");
   document.getElementById("staffForm").setAttribute("data-edit-id", staffId);
 
@@ -270,11 +266,11 @@ function viewStaff(staffId) {
 
   document.getElementById("modalTitle").textContent = "View Staff";
 
-  // Show and populate staff id
+
   document.getElementById("staffIdContainer").classList.remove("hidden");
   document.getElementById("staffId").value = staff.staffId;
 
-  // Populate modal with staff data
+
   document.getElementById("firstName").value = staff.firstName;
   document.getElementById("lastName").value = staff.lastName;
   document.getElementById("designation").value = staff.designation;
@@ -356,7 +352,7 @@ function getStaffData() {
   };
 }
 
-// UI Updates
+
 
 function updateStaffTable() {
   // Sort staff data
@@ -427,7 +423,6 @@ function updateStaffTable() {
 }
 
 function attachEventListeners() {
-  // Add event listeners for edit buttons
   document.querySelectorAll(".edit-staff-btn").forEach((button) => {
     button.addEventListener("click", (e) => {
       const staffId = e.target.dataset.staffId;
@@ -435,7 +430,6 @@ function attachEventListeners() {
     });
   });
 
-  // Add event listeners for view buttons
   document.querySelectorAll(".view-staff-btn").forEach((button) => {
     button.addEventListener("click", (e) => {
       const staffId = e.target.dataset.staffId;
@@ -443,7 +437,6 @@ function attachEventListeners() {
     });
   });
 
-  // Add event listeners for delete buttons
   document.querySelectorAll(".delete-staff-btn").forEach((button) => {
     button.addEventListener("click", (e) => {
       const staffId = e.target.dataset.staffId;
@@ -465,10 +458,8 @@ function updateStats() {
   document.getElementById("otherRolesCount").textContent = otherRolesCount;
 }
 
-// Event Listeners
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    // Fetch staff from API
     staffs = await getAllStaff();
     updateStaffTable();
     updateStats();
@@ -476,20 +467,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupFieldValidation();
     initializeSortHeaders();
 
-    // Set Event Listeners for open and close modal
     document.getElementById("addStaffBtn").addEventListener("click", openModal);
     document
       .getElementById("cancelStaffBtn")
       .addEventListener("click", closeModal);
 
-    // Close modal when clicking outside
     document.getElementById("staffModal").addEventListener("click", (e) => {
       if (e.target.id === "staffModal") {
         closeModal();
       }
     });
 
-    // Form submission handling
     document.getElementById("staffForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const mode = e.target.getAttribute("data-mode");

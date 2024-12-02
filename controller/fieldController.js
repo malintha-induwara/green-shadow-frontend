@@ -28,7 +28,7 @@ let fields = [];
 let staffs = [];
 let selectedOptions = [];
 
-// Modal Control
+
 function openModal() {
   const modal = document.getElementById("fieldModal");
   modal.classList.remove("hidden");
@@ -682,7 +682,7 @@ function editField(fieldCode) {
     renderOptions("");
   }
 
-  // Show modal
+
   openModal();
 }
 
@@ -711,7 +711,7 @@ function viewField(fieldCode) {
   }
   document.getElementById("fieldCodeContainer").classList.remove("hidden");
 
-  // Set form data
+
   document.getElementById("fieldCode").value = field.fieldCode;
   document.getElementById("fieldName").value = field.fieldName;
   document.getElementById("latitude").value = field.fieldLocation.x;
@@ -738,7 +738,6 @@ function viewField(fieldCode) {
       }
     });
 
-    // Refresh the dropdown and selected options display
     renderSelectedOptions();
     renderOptions("");
   }
@@ -751,7 +750,6 @@ function viewField(fieldCode) {
     element.disabled = true;
   }
 
-  // Show modal
   openModal();
 }
 
@@ -816,7 +814,6 @@ async function updateFieldInTheTable(editId) {
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    //Fetch Fields From API
     fields = await getAllFields();
     staffs = await getAllStaff();
 
@@ -827,7 +824,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupFieldValidation();
     initializeFieldSortHeaders();
 
-    // Set Event Listeners for open and close modal
     document.getElementById("addFieldBtn").addEventListener("click", openModal);
     document
       .getElementById("cancelFieldBtn")
@@ -835,7 +831,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     initializeImageUpload();
 
-    //Close Model When Clicking Outside
     document.getElementById("fieldModal").addEventListener("click", (e) => {
       if (e.target.id === "fieldModal") {
         closeModal();
