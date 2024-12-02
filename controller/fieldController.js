@@ -170,17 +170,16 @@ const toggleDropdown = () => {
 };
 
 function updateStaffDropdown() {
-  // Get DOM Elements for multiselect
   const searchInput = document.getElementById("searchInput");
   const dropdown = document.getElementById("dropdown");
   const searchContainer = document.getElementById("searchContainer");
   const dropdownContainer = document.getElementById("dropdownContainer");
 
-  // Initial render of options and selected options
+  // Initial render of options 
   renderOptions();
   renderSelectedOptions();
 
-  // Toggle dropdown
+
   searchContainer.addEventListener("click", toggleDropdown);
 
   // Close dropdown when clicking outside
@@ -203,7 +202,7 @@ function renderOptions(searchTerm = "") {
   const dropdown = document.getElementById("dropdown");
   const filteredOptions = staffs.filter(
     (staff) =>
-      staff.firstName.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      staff.staffId.toString().includes(searchTerm) &&
       !selectedOptions.find((selected) => selected.staffId === staff.staffId)
   );
 
@@ -213,7 +212,7 @@ function renderOptions(searchTerm = "") {
           (staff) => `
         <div class="px-3 py-2 cursor-pointer hover:bg-blue-50" 
              data-id="${staff.staffId}">
-          ${staff.firstName} ${staff.lastName}
+          ${staff.staffId}
         </div>
       `
         )
@@ -256,7 +255,7 @@ function renderSelectedOptions() {
     .map(
       (staff) => `
       <div class="flex items-center bg-blue-100 px-3 py-1 rounded group">
-        <span class="text-blue-800">${staff.firstName} ${staff.lastName}</span>
+        <span class="text-blue-800">${staff.staffId}</span>
         <button type="button" 
                 class="ml-2 text-blue-600 hover:text-blue-800 opacity-0 group-hover:opacity-100 transition-opacity remove-staff"
                 data-staff-id="${staff.staffId}">

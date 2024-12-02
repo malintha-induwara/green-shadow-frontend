@@ -32,8 +32,11 @@
                   type="button"
                   class="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
                 >
-                <img  class="h-6 w-6" src="/assets/images/icons/burgerButton.svg" alt="burgerButton">
-                  
+                  <img
+                    class="h-6 w-6"
+                    src="/assets/images/icons/burgerButton.svg"
+                    alt="burgerButton"
+                  />
                 </button>
                 <h1 class="text-xl font-semibold ml-2 md:ml-0">
                   Dashboard Overview
@@ -51,11 +54,20 @@
             <div class="bg-white rounded-lg shadow p-6">
               <div class="flex items-center">
                 <div class="p-3 rounded-full bg-green-100 text-green-600">
-                  <img class="w-6 h-6" src="/assets/images/icons/dashUser.svg" alt="staff">
+                  <img
+                    class="w-6 h-6"
+                    src="/assets/images/icons/dashUser.svg"
+                    alt="staff"
+                  />
                 </div>
                 <div class="ml-4">
                   <h2 class="text-gray-600 text-sm">Total Staff</h2>
-                  <p class="text-2xl font-semibold text-gray-800">45</p>
+                  <p
+                    id="totalStaff"
+                    class="text-2xl font-semibold text-gray-800"
+                  >
+                    0
+                  </p>
                 </div>
               </div>
             </div>
@@ -64,11 +76,20 @@
             <div class="bg-white rounded-lg shadow p-6">
               <div class="flex items-center">
                 <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-                 <img class="w-6 h-6" src="/assets/images/icons/activeFields.svg" alt="activeFields">
+                  <img
+                    class="w-6 h-6"
+                    src="/assets/images/icons/activeFields.svg"
+                    alt="activeFields"
+                  />
                 </div>
                 <div class="ml-4">
                   <h2 class="text-gray-600 text-sm">Active Fields</h2>
-                  <p class="text-2xl font-semibold text-gray-800">12</p>
+                  <p
+                    id="totalFields"
+                    class="text-2xl font-semibold text-gray-800"
+                  >
+                    0
+                  </p>
                 </div>
               </div>
             </div>
@@ -77,31 +98,82 @@
             <div class="bg-white rounded-lg shadow p-6">
               <div class="flex items-center">
                 <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
-                  <img class="w-6 h-6" src="/assets/images/icons/dashCrop.svg" alt="crops">
+                  <img
+                    class="w-6 h-6"
+                    src="/assets/images/icons/dashCrop.svg"
+                    alt="crops"
+                  />
                 </div>
                 <div class="ml-4">
                   <h2 class="text-gray-600 text-sm">Crop Types</h2>
-                  <p class="text-2xl font-semibold text-gray-800">8</p>
+                  <p
+                    id="totalCrops"
+                    class="text-2xl font-semibold text-gray-800"
+                  >
+                    0
+                  </p>
                 </div>
               </div>
             </div>
 
-            <!-- Total Yield -->
+            <!-- Total Vehicles -->
             <div class="bg-white rounded-lg shadow p-6">
               <div class="flex items-center">
                 <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-                  <img class="w-6 h-6" src="/assets/images/icons/totalYield.svg" alt="totalYield">
+                  <img
+                    class="w-6 h-6"
+                    src="/assets/images/icons/totalVehicle.svg"
+                    alt="totalYield"
+                  />
                 </div>
                 <div class="ml-4">
-                  <h2 class="text-gray-600 text-sm">Total Yield</h2>
-                  <p class="text-2xl font-semibold text-gray-800">128t</p>
+                  <h2 class="text-gray-600 text-sm">Total Vehicles</h2>
+                  <p
+                    id="totalVehicles"
+                    class="text-2xl font-semibold text-gray-800"
+                  >
+                    0
+                  </p>
                 </div>
               </div>
             </div>
           </div>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+            <!-- Resources Chart -->
+            <div class="bg-white rounded-lg shadow p-4 h-[300px]">
+              <h3 class="text-lg font-semibold text-gray-800 mb-2">Resources Overview</h3>
+              <div class="relative h-[calc(100%-2rem)]">
+                <canvas id="resourcesChart"></canvas>
+              </div>
+            </div>
+            
+            <!-- Staff Roles Chart -->
+            <div class="bg-white rounded-lg shadow p-4 h-[300px]">
+              <h3 class="text-lg font-semibold text-gray-800 mb-2">Staff Roles</h3>
+              <div class="relative h-[calc(100%-2rem)]">
+                <canvas id="staffRolesChart"></canvas>
+              </div>
+            </div>
+            
+            <!-- Vehicle Status Chart -->
+            <div class="bg-white rounded-lg shadow p-4 h-[300px]">
+              <h3 class="text-lg font-semibold text-gray-800 mb-2">Vehicle Status</h3>
+              <div class="relative h-[calc(100%-2rem)]">
+                <canvas id="vehicleStatusChart"></canvas>
+              </div>
+            </div>
+            
+            <!-- Field Size Chart -->
+            <div class="bg-white rounded-lg shadow p-4 h-[300px]">
+              <h3 class="text-lg font-semibold text-gray-800 mb-2">Field Sizes</h3>
+              <div class="relative h-[calc(100%-2rem)]">
+                <canvas id="fieldSizeChart"></canvas>
+              </div>
+            </div>
           </div>
         </div>
       </main>
     </div>
+    <script type="module" src="../controller/dashboardController.js"></script>
   </body>
 </html>
