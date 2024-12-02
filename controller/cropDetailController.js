@@ -46,6 +46,14 @@ function closeModal() {
   resetForm();
 }
 
+
+function setCurrentDate() {
+  const dateInput = document.getElementById("logDate");
+  const today = new Date().toISOString().split("T")[0];
+  dateInput.value = today;
+}
+
+
 function resetForm() {
   document.getElementById("modalTitle").textContent = "Add Log";
   document.getElementById("logForm").reset();
@@ -57,6 +65,8 @@ function resetForm() {
   document.getElementById("uploadState").classList.remove("hidden");
   document.getElementById("previewImg").src = "";
 
+  setCurrentDate();
+
   document
     .getElementById("staffSearchContainer")
     .addEventListener("click", toggleStaffDropdown);
@@ -66,6 +76,16 @@ function resetForm() {
   document
     .getElementById("cropSearchContainer")
     .addEventListener("click", toggleCropDropdown);
+
+
+  selectedStaff = [];
+  selectedFields = [];
+  selectedCrops = [];
+
+  updateStaffDropdown();
+  updateFieldDropdown();
+  updateCropDropdown();
+
 
   const formElements = document.getElementById("logForm").elements;
   for (let element of formElements) {
@@ -983,6 +1003,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     updateFieldDropdown();
     updateCropDropdown();
     updateStats();
+
+    setCurrentDate();
 
     initializeLogSortHeaders();
 
