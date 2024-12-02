@@ -53,6 +53,14 @@ function resetForm() {
   }
 }
 
+
+function initializeSearch() {
+  document.getElementById('tableSearch').addEventListener('input', (e) => {
+    updateVehiclesTable(e.target.value);
+  });
+}
+
+
 function initializeSortHeaders() {
   const headers = document.querySelectorAll('th[data-sortable]');
   headers.forEach(header => {
@@ -288,16 +296,33 @@ function updateStaffDropdown() {
     `;
 }
 
-function updateVehiclesTable() {
-  const sortedVehicles = [...vehicles].sort((a, b) => {
-    let comparison = 0;
-    const aVal = String(a[currentSort.field]);
-    const bVal = String(b[currentSort.field]);
-    
-    comparison = aVal.localeCompare(bVal);
-    
-    return currentSort.direction === 'asc' ? comparison : -comparison;
-  });
+function updateVehiclesTable(searchQuery = '') {
+  const sortedVehicles = [...vehicles]
+    .filter(vehicle => {
+      if (!searchQuery) return true;
+      
+      const searchFields = [
+        vehicle.vehicleCode,
+        vehicle.licensePlateNumber,
+        vehicle.vehicleCategory,
+        vehicle.fuelType,
+        vehicle.staff,
+        vehicle.status
+      ];
+      
+      return searchFields.some(field => 
+        String(field).toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    })
+    .sort((a, b) => {
+      let comparison = 0;
+      const aVal = String(a[currentSort.field]);
+      const bVal = String(b[currentSort.field]);
+      
+      comparison = aVal.localeCompare(bVal);
+      
+      return currentSort.direction === 'asc' ? comparison : -comparison;
+    });
 
   const tbody = document.getElementById("vehicleTable");
   tbody.innerHTML = sortedVehicles
@@ -391,6 +416,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     setupFieldValidation();
     initializeSortHeaders();
+
+    initializeSearch();
 
     document
       .getElementById("addVehicleBtn")

@@ -94,6 +94,13 @@ function resetForm() {
   }
 }
 
+function initializeSearch() {
+  document.getElementById('tableSearch').addEventListener('input', (e) => {
+    updateLogTable(e.target.value);
+  });
+}
+
+
 function initializeLogSortHeaders() {
   const headers = document.querySelectorAll("th[data-sortable]");
   headers.forEach((header) => {
@@ -509,22 +516,36 @@ function removeCropOption(cropId) {
   renderCropOptions(document.getElementById("cropSearchInput").value);
 }
 
-function updateLogTable() {
-  const sortedLogs = [...cropDetailLogs].sort((a, b) => {
-    let comparison = 0;
-    let aVal = a[currentLogSort.field];
-    let bVal = b[currentLogSort.field];
+function updateLogTable(searchQuery = '') {
+  const sortedLogs = [...cropDetailLogs]
+    .filter(log => {
+      if (!searchQuery) return true;
+      
+      const searchFields = [
+        log.logCode,
+        log.logDate,
+        log.logDetail
+      ];
+      
+      return searchFields.some(field => 
+        String(field).toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    })
+    .sort((a, b) => {
+      let comparison = 0;
+      let aVal = a[currentLogSort.field];
+      let bVal = b[currentLogSort.field];
 
-    if (currentLogSort.field === "logDate") {
-      aVal = new Date(a.logDate);
-      bVal = new Date(b.logDate);
-    }
+      if (currentLogSort.field === "logDate") {
+        aVal = new Date(a.logDate);
+        bVal = new Date(b.logDate);
+      }
 
-    comparison = String(aVal).localeCompare(String(bVal), undefined, {
-      numeric: true,
+      comparison = String(aVal).localeCompare(String(bVal), undefined, {
+        numeric: true,
+      });
+      return currentLogSort.direction === "asc" ? comparison : -comparison;
     });
-    return currentLogSort.direction === "asc" ? comparison : -comparison;
-  });
 
   const tbody = document.getElementById("logTable");
   tbody.innerHTML = sortedLogs
@@ -532,9 +553,7 @@ function updateLogTable() {
       (cropDetailLog) => `
         <tr>
           <td class="px-6 py-2 whitespace-nowrap">
-            <div class="text-sm font-medium text-gray-900">${
-              cropDetailLog.logCode
-            }</div>
+            <div class="text-sm font-medium text-gray-900">${cropDetailLog.logCode}</div>
           </td>
           <td class="px-6 py-2 whitespace-nowrap">
             <div class="text-sm text-gray-900">${cropDetailLog.logDate}</div>
@@ -545,26 +564,16 @@ function updateLogTable() {
           <td class="px-6 py-2 whitespace-nowrap">
             <div class="flex items-center justify-center">
               <img 
-                src="${
-                  cropDetailLog.observedImage
-                    ? `data:image/png;base64,${cropDetailLog.observedImage}`
-                    : "/assets/images/noImage.png"
-                }"
+                src="${cropDetailLog.observedImage ? `data:image/png;base64,${cropDetailLog.observedImage}` : "/assets/images/noImage.png"}"
                 alt="Observed Image"
                 class="h-16 w-24 rounded-lg object-cover shadow-sm"
               />
             </div>
           </td>
           <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500">
-            <button data-log-code="${
-              cropDetailLog.logCode
-            }" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
-            <button data-log-code="${
-              cropDetailLog.logCode
-            }" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-            <button data-log-code="${
-              cropDetailLog.logCode
-            }" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
+            <button data-log-code="${cropDetailLog.logCode}" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
+            <button data-log-code="${cropDetailLog.logCode}" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+            <button data-log-code="${cropDetailLog.logCode}" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
           </td>
         </tr>
       `
@@ -1007,6 +1016,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     setCurrentDate();
 
     initializeLogSortHeaders();
+    initializeSearch();
 
     
     document.getElementById("addLogBtn").addEventListener("click", openModal);

@@ -48,6 +48,14 @@ function resetForm() {
   }
 }
 
+
+function initializeSearch() {
+  document.getElementById('tableSearch').addEventListener('input', (e) => {
+    updateUsersTable(e.target.value);
+  });
+}
+
+
 function initializeUserSortHeaders() {
   const headers = document.querySelectorAll("th[data-sortable]");
   headers.forEach((header) => {
@@ -227,56 +235,56 @@ function getUserData() {
 }
 
 
-function updateUsersTable() {
-  const sortedUsers = [...users].sort((a, b) => {
-    let comparison = 0;
-    const aVal =
-      a[currentSort.field] === null ? "" : String(a[currentSort.field]);
-    const bVal =
-      b[currentSort.field] === null ? "" : String(b[currentSort.field]);
+function updateUsersTable(searchQuery = '') {
+  const sortedUsers = [...users]
+    .filter(user => {
+      if (!searchQuery) return true;
+      
+      const searchFields = [
+        user.email,
+        user.role
+      ];
+      
+      return searchFields.some(field => 
+        String(field).toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    })
+    .sort((a, b) => {
+      let comparison = 0;
+      const aVal = a[currentSort.field] === null ? "" : String(a[currentSort.field]);
+      const bVal = b[currentSort.field] === null ? "" : String(b[currentSort.field]);
 
-    comparison = aVal.localeCompare(bVal);
-
-    return currentSort.direction === "asc" ? comparison : -comparison;
-  });
+      comparison = aVal.localeCompare(bVal);
+      return currentSort.direction === "asc" ? comparison : -comparison;
+    });
 
   const tbody = document.getElementById("userTable");
   tbody.innerHTML = sortedUsers
     .map(
       (user) => `
-                <tr>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900">${
-                      user.email
-                    }</div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                      ${
-                        user.role === "MANAGER"
-                          ? "bg-blue-100 text-blue-800"
-                          : user.role === "ADMINISTRATIVE"
-                          ? "bg-green-100 text-green-800"
-                          : user.role === "SCIENTIST"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-gray-100 text-gray-800"
-                      }">
-                      ${user.role}
-                    </span>
-                  </td>
-                  <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                   <button data-email="${
-                     user.email
-                   }" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
-                   <button data-email="${
-                     user.email
-                   }" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                   <button data-email="${
-                     user.email
-                   }" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
-                  </td>
-                </tr>
-              `
+        <tr>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm font-medium text-gray-900">${user.email}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+              ${user.role === "MANAGER"
+                ? "bg-blue-100 text-blue-800"
+                : user.role === "ADMINISTRATIVE"
+                ? "bg-green-100 text-green-800"
+                : user.role === "SCIENTIST"
+                ? "bg-yellow-100 text-yellow-800"
+                : "bg-gray-100 text-gray-800"}">
+              ${user.role}
+            </span>
+          </td>
+          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+            <button data-email="${user.email}" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
+            <button data-email="${user.email}" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+            <button data-email="${user.email}" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
+          </td>
+        </tr>
+      `
     )
     .join("");
 
@@ -328,6 +336,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     setupEmailValidation();
     initializeUserSortHeaders();
+    initializeSearch();
 
     document.getElementById("addUserBtn").addEventListener("click", openModal);
     document

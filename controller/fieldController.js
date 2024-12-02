@@ -89,6 +89,14 @@ function resetForm() {
   }
 }
 
+
+function initializeSearch() {
+  document.getElementById('tableSearch').addEventListener('input', (e) => {
+    updateFieldsTable(e.target.value);
+  });
+}
+
+
 function initializeFieldSortHeaders() {
   const headers = document.querySelectorAll("th[data-sortable]");
   headers.forEach((header) => {
@@ -299,25 +307,40 @@ function removeOption(staffId) {
   renderOptions(document.getElementById("searchInput").value);
 }
 
-function updateFieldsTable() {
-  const sortedFields = [...fields].sort((a, b) => {
-    let comparison = 0;
-    let aVal = "";
-    let bVal = "";
+function updateFieldsTable(searchQuery = '') {
+  const sortedFields = [...fields]
+    .filter(field => {
+      if (!searchQuery) return true;
+      
+      const searchFields = [
+        field.fieldCode,
+        field.fieldName,
+        `${field.fieldLocation.x}, ${field.fieldLocation.y}`,
+        field.extentSize
+      ];
+      
+      return searchFields.some(field => 
+        String(field).toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    })
+    .sort((a, b) => {
+      let comparison = 0;
+      let aVal = "";
+      let bVal = "";
 
-    if (currentSort.field === "fieldLocation") {
-      aVal = a.fieldLocation.x + a.fieldLocation.y;
-      bVal = b.fieldLocation.x + b.fieldLocation.y;
-    } else {
-      aVal = a[currentSort.field] ?? "";
-      bVal = b[currentSort.field] ?? "";
-    }
+      if (currentSort.field === "fieldLocation") {
+        aVal = a.fieldLocation.x + a.fieldLocation.y;
+        bVal = b.fieldLocation.x + b.fieldLocation.y;
+      } else {
+        aVal = a[currentSort.field] ?? "";
+        bVal = b[currentSort.field] ?? "";
+      }
 
-    comparison = String(aVal).localeCompare(String(bVal), undefined, {
-      numeric: true,
+      comparison = String(aVal).localeCompare(String(bVal), undefined, {
+        numeric: true,
+      });
+      return currentSort.direction === "asc" ? comparison : -comparison;
     });
-    return currentSort.direction === "asc" ? comparison : -comparison;
-  });
 
   const tbody = document.getElementById("fieldTable");
   tbody.innerHTML = sortedFields
@@ -325,9 +348,7 @@ function updateFieldsTable() {
       (field) => `
         <tr>
           <td class="px-6 py-2 whitespace-nowrap">
-            <div class="text-sm font-medium text-gray-900">${
-              field.fieldCode
-            }</div>
+            <div class="text-sm font-medium text-gray-900">${field.fieldCode}</div>
           </td>
           <td class="px-6 py-2 whitespace-nowrap">
             <div class="text-sm text-gray-900">${field.fieldName}</div>
@@ -343,11 +364,7 @@ function updateFieldsTable() {
           <td class="px-2 py-2 whitespace-nowrap">
             <div class="flex items-center justify-center">
               <img 
-                src="${
-                  field.fieldImage1
-                    ? `data:image/png;base64,${field.fieldImage1}`
-                    : "/assets/images/noImage.png"
-                }"
+                src="${field.fieldImage1 ? `data:image/png;base64,${field.fieldImage1}` : "/assets/images/noImage.png"}"
                 alt="Field Image 1"
                 class="h-16 w-24 rounded-lg object-cover shadow-sm"
               />
@@ -356,26 +373,16 @@ function updateFieldsTable() {
           <td class="px-2 py-2 whitespace-nowrap">
             <div class="flex items-center justify-center">
               <img 
-                src="${
-                  field.fieldImage2
-                    ? `data:image/png;base64,${field.fieldImage2}`
-                    : "/assets/images/noImage.png"
-                }"
+                src="${field.fieldImage2 ? `data:image/png;base64,${field.fieldImage2}` : "/assets/images/noImage.png"}"
                 alt="Field Image 2"
                 class="h-16 w-24 rounded-lg object-cover shadow-sm"
               />
             </div>
           </td>
           <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-            <button data-field-code="${
-              field.fieldCode
-            }" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
-            <button data-field-code="${
-              field.fieldCode
-            }" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-            <button data-field-code="${
-              field.fieldCode
-            }" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
+            <button data-field-code="${field.fieldCode}" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
+            <button data-field-code="${field.fieldCode}" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+            <button data-field-code="${field.fieldCode}" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
           </td>
         </tr>
       `
@@ -884,14 +891,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     setupFieldValidation();
     initializeFieldSortHeaders();
+    initializeSearch();
+    initializeImageUpload();
+    initializeMap();
 
     document.getElementById("addFieldBtn").addEventListener("click", openModal);
     document
       .getElementById("cancelFieldBtn")
       .addEventListener("click", closeModal);
 
-    initializeImageUpload();
-    initializeMap();
 
     document.getElementById("fieldModal").addEventListener("click", (e) => {
       if (e.target.id === "fieldModal") {

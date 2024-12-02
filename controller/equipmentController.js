@@ -56,6 +56,13 @@ function resetForm() {
   }
 }
 
+function initializeSearch() {
+  document.getElementById('tableSearch').addEventListener('input', (e) => {
+    updateEquipmentTable(e.target.value);
+  });
+}
+
+
 function initializeEquipmentSortHeaders() {
   const headers = document.querySelectorAll("th[data-sortable]");
   headers.forEach((header) => {
@@ -273,27 +280,41 @@ function updateFieldsDropdown() {
     `;
 }
 
-function updateEquipmentTable() {
-  const sortedEquipment = [...equipment].sort((a, b) => {
-    let comparison = 0;
-    const aVal =
-      a[currentSort.field] === null ? "" : String(a[currentSort.field]);
-    const bVal =
-      b[currentSort.field] === null ? "" : String(b[currentSort.field]);
+function updateEquipmentTable(searchQuery = '') {
+  const sortedEquipment = [...equipment]
+    .filter(item => {
+      if (!searchQuery) return true;
+      
+      const searchFields = [
+        item.equipmentId,
+        item.name,
+        item.equipmentType,
+        item.field,
+        item.staff,
+        item.status
+      ];
+      
+      return searchFields.some(field => 
+        String(field).toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    })
+    .sort((a, b) => {
+      let comparison = 0;
+      const aVal = a[currentSort.field] === null ? "" : String(a[currentSort.field]);
+      const bVal = b[currentSort.field] === null ? "" : String(b[currentSort.field]);
 
-    comparison = aVal.localeCompare(bVal);
+      comparison = aVal.localeCompare(bVal);
 
-    return currentSort.direction === "asc" ? comparison : -comparison;
-  });
+      return currentSort.direction === "asc" ? comparison : -comparison;
+    });
+
   const tbody = document.getElementById("equipmentTable");
   tbody.innerHTML = sortedEquipment
     .map(
       (item) => `
       <tr>
         <td class="px-6 py-4 whitespace-nowrap">
-          <div class="text-sm font-medium text-gray-900">${
-            item.equipmentId
-          }</div>
+          <div class="text-sm font-medium text-gray-900">${item.equipmentId}</div>
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
           <div class="text-sm text-gray-900">${item.name}</div>
@@ -302,35 +323,21 @@ function updateEquipmentTable() {
           <div class="text-sm text-gray-900">${item.equipmentType}</div>
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
-          <div class="text-sm text-gray-900">${
-            item.field === null ? "No" : item.field
-          }</div>
+          <div class="text-sm text-gray-900">${item.field === null ? "No" : item.field}</div>
         </td>
         <td class="px-4 py-4 whitespace-nowrap">
-          <div class="text-sm text-gray-900">${
-            item.staff === null ? "No" : item.staff
-          }</div>
+          <div class="text-sm text-gray-900">${item.staff === null ? "No" : item.staff}</div>
         </td>
         <td class="px-4 py-4 whitespace-nowrap">
           <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-            ${
-              item.status === "AVAILABLE"
-                ? "bg-green-100 text-green-800"
-                : "bg-yellow-100 text-yellow-800"
-            }">
+            ${item.status === "AVAILABLE" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}">
             ${item.status}
           </span>
         </td>
         <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-          <button data-equipment-id="${
-            item.equipmentId
-          }" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
-          <button data-equipment-id="${
-            item.equipmentId
-          }" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-          <button data-equipment-id="${
-            item.equipmentId
-          }" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
+          <button data-equipment-id="${item.equipmentId}" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
+          <button data-equipment-id="${item.equipmentId}" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+          <button data-equipment-id="${item.equipmentId}" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
         </td>
       </tr>
     `
@@ -391,6 +398,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     updateStats();
 
     initializeEquipmentSortHeaders();
+    initializeSearch();
 
     document
       .getElementById("addEquipmentBtn")

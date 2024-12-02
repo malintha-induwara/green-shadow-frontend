@@ -54,6 +54,13 @@ function resetForm() {
   }
 }
 
+function initializeSearch() {
+  document.getElementById('tableSearch').addEventListener('input', (e) => {
+    updateCropsTable(e.target.value);
+  });
+}
+
+
 function initializeSortHeaders() {
   const headers = document.querySelectorAll("th[data-sortable]");
   headers.forEach((header) => {
@@ -137,18 +144,32 @@ function updateFieldsDropdown() {
   `;
 }
 
-function updateCropsTable() {
-  const sortedCrops = [...crops].sort((a, b) => {
-    let comparison = 0;
-    const aVal =
-      a[currentSort.field] === null ? "" : String(a[currentSort.field]);
-    const bVal =
-      b[currentSort.field] === null ? "" : String(b[currentSort.field]);
-
-    comparison = aVal.localeCompare(bVal);
-
-    return currentSort.direction === "asc" ? comparison : -comparison;
-  });
+function updateCropsTable(searchQuery = '') {
+  const sortedCrops = [...crops]
+    .filter(crop => {
+      if (!searchQuery) return true;
+      
+      const searchFields = [
+        crop.cropCode,
+        crop.cropCommonName,
+        crop.category,
+        crop.cropSeason,
+        crop.field
+      ];
+      
+      return searchFields.some(field => 
+        String(field).toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    })
+    .sort((a, b) => {
+      let comparison = 0;
+      const aVal = a[currentSort.field] === null ? "" : String(a[currentSort.field]);
+      const bVal = b[currentSort.field] === null ? "" : String(b[currentSort.field]);
+      
+      comparison = aVal.localeCompare(bVal);
+      
+      return currentSort.direction === "asc" ? comparison : -comparison;
+    });
 
   const tbody = document.getElementById("cropTable");
   tbody.innerHTML = sortedCrops
@@ -156,23 +177,15 @@ function updateCropsTable() {
       (crop) => `
                 <tr>
                   <td class="px-6 py-2 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900">${
-                      crop.cropCode
-                    }</div>
+                    <div class="text-sm font-medium text-gray-900">${crop.cropCode}</div>
                   </td>
                   <td class="px-6 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">${
-                      crop.cropCommonName
-                    }</div>
+                    <div class="text-sm text-gray-900">${crop.cropCommonName}</div>
                   </td>
                   <td class="px-6 py-2 whitespace-nowrap">
                     <div class="flex items-center">
                       <img 
-                         src="${
-                           crop.image
-                             ? `data:image/png;base64,${crop.image}`
-                             : `/assets/images/noImage.png`
-                         }" 
+                         src="${crop.image ? `data:image/png;base64,${crop.image}` : `/assets/images/noImage.png`}" 
                         alt="${crop.cropCommonName}"
                         class="h-16 w-24 rounded-lg object-cover shadow-sm"
                       />
@@ -183,33 +196,23 @@ function updateCropsTable() {
                   </td>
                   <td class="px-4 py-2 whitespace-nowrap">
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                      ${
-                        crop.cropSeason === "Spring"
+                      ${crop.cropSeason === "Spring"
                           ? "bg-green-100 text-green-800"
                           : crop.cropSeason === "Summer"
                           ? "bg-yellow-100 text-yellow-800"
                           : crop.cropSeason === "Fall"
                           ? "bg-orange-100 text-orange-800"
-                          : "bg-blue-100 text-blue-800"
-                      }">
+                          : "bg-blue-100 text-blue-800"}">
                       ${crop.cropSeason}
                     </span>
                   </td>
                   <td class="px-4 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">${
-                      crop.field === null ? "No" : crop.field
-                    }</div>
+                    <div class="text-sm text-gray-900">${crop.field === null ? "No" : crop.field}</div>
                   </td>
                   <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-                    <button data-crop-code="${
-                      crop.cropCode
-                    }" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
-                    <button data-crop-code="${
-                      crop.cropCode
-                    }" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                    <button data-crop-code="${
-                      crop.cropCode
-                    }" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
+                    <button data-crop-code="${crop.cropCode}" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
+                    <button data-crop-code="${crop.cropCode}" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                    <button data-crop-code="${crop.cropCode}" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
                   </td>
                 </tr>
               `
@@ -518,6 +521,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     updateStats();
 
     initializeSortHeaders();
+    initializeSearch();
 
     document.getElementById("addCropBtn").addEventListener("click", openModal);
     document
