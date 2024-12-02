@@ -4,9 +4,21 @@ import {
   updateVehicle,
   deleteVehicle,
 } from "../model/vehicleModel.js";
-
 import { getAllStaff } from "../model/staffModel.js";
 
+
+//Toast Configs
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'bottom-end',
+  iconColor: 'white',
+  customClass: {
+    popup: 'colored-toast',
+  },
+  showConfirmButton: false,
+  timer: 1500,
+  timerProgressBar: true,
+})
 
 let currentSort = {
   field: 'vehicleCode',
@@ -116,23 +128,51 @@ async function addVehicleToTheTable() {
     vehicles.push(response);
     updateVehiclesTable();
     updateStats();
+    Toast.fire({
+      icon: 'success',
+      title: 'Vehicle added successfully'
+    });
   } catch (error) {
-    console.error(error);
-    alert("Failed to add vehicle");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to Add vehicle",
+      icon: "error",
+      confirmButtonColor: "#d33"
+    });
   }
 }
 
 async function deleteVehicleFromTable(id) {
   try {
-    if (confirm("Are you sure you want to delete this vehicle?")) {
-      await deleteVehicle(id);
-      vehicles = vehicles.filter((vehicle) => vehicle.vehicleCode !== id);
-      updateVehiclesTable();
-      updateStats();
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#22C55E",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        deleteVehicle(id);
+        vehicles = vehicles.filter((vehicle) => vehicle.vehicleCode !== id);
+        updateVehiclesTable();
+        updateStats();
+
+        Toast.fire({
+          icon: 'success',
+          title: 'Vehicle deleted successfully'
+        });
+      }
+    });
   } catch (error) {
-    console.error(error);
-    alert("Failed to delete vehicle");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to delete vehicle",
+      icon: "error",
+      confirmButtonColor: "#d33"
+    });
   }
 }
 
@@ -202,9 +242,19 @@ async function updateVehicleOfTable(vehicleCode) {
   );
     updateVehiclesTable();
     updateStats();
+
+    Toast.fire({
+      icon: 'success',
+      title: 'Vehicle updated successfully'
+    });
   } catch (error) {
-    console.error(error);
-    alert("Failed to update vehicle");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to update vehicle",
+      icon: "error",
+      confirmButtonColor: "#d33"
+    });
+  
   }
 }
 
@@ -383,7 +433,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       closeModal();
     });
   } catch (error) {
-    console.error(error);
-    alert("Failed to fetch vehicles");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to Fetch vehicle data",
+      icon: "error",
+      confirmButtonColor: "#d33"
+    });
   }
 });

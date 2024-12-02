@@ -8,12 +8,23 @@ import { getAllStaff } from "../model/staffModel.js";
 import { getAllFields } from "../model/fieldModel.js";
 import { getAllCrops } from "../model/cropModel.js";
 
+//Toast Configs
+const Toast = Swal.mixin({
+  toast: true,
+  position: "bottom-end",
+  iconColor: "white",
+  customClass: {
+    popup: "colored-toast",
+  },
+  showConfirmButton: false,
+  timer: 1500,
+  timerProgressBar: true,
+});
 
 let currentLogSort = {
-  field: 'logCode',
-  direction: 'asc'
+  field: "logCode",
+  direction: "asc",
 };
-
 
 let cropDetailLogs = [];
 let staff = [];
@@ -64,20 +75,21 @@ function resetForm() {
 }
 
 function initializeLogSortHeaders() {
-  const headers = document.querySelectorAll('th[data-sortable]');
-  headers.forEach(header => {
-    header.addEventListener('click', () => handleLogHeaderClick(header));
+  const headers = document.querySelectorAll("th[data-sortable]");
+  headers.forEach((header) => {
+    header.addEventListener("click", () => handleLogHeaderClick(header));
   });
 }
 
 function handleLogHeaderClick(header) {
-  const field = header.getAttribute('data-field');
+  const field = header.getAttribute("data-field");
 
   if (field === currentLogSort.field) {
-    currentLogSort.direction = currentLogSort.direction === 'asc' ? 'desc' : 'asc';
+    currentLogSort.direction =
+      currentLogSort.direction === "asc" ? "desc" : "asc";
   } else {
     currentLogSort.field = field;
-    currentLogSort.direction = 'asc';
+    currentLogSort.direction = "asc";
   }
 
   updateLogSortIndicators();
@@ -85,22 +97,23 @@ function handleLogHeaderClick(header) {
 }
 
 function updateLogSortIndicators() {
-  const headers = document.querySelectorAll('th[data-sortable]');
-  headers.forEach(header => {
-    const field = header.getAttribute('data-field');
-    const existingIcon = header.querySelector('.sort-icon');
+  const headers = document.querySelectorAll("th[data-sortable]");
+  headers.forEach((header) => {
+    const field = header.getAttribute("data-field");
+    const existingIcon = header.querySelector(".sort-icon");
 
     if (existingIcon) existingIcon.remove();
 
     if (field === currentLogSort.field) {
-      const icon = document.createElement('span');
-      icon.className = 'sort-icon ml-1 inline-block';
+      const icon = document.createElement("span");
+      icon.className = "sort-icon ml-1 inline-block";
 
-      icon.innerHTML = currentLogSort.direction === 'asc'
-        ? `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      icon.innerHTML =
+        currentLogSort.direction === "asc"
+          ? `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
            </svg>`
-        : `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          : `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
            </svg>`;
 
@@ -476,20 +489,21 @@ function removeCropOption(cropId) {
   renderCropOptions(document.getElementById("cropSearchInput").value);
 }
 
-
 function updateLogTable() {
   const sortedLogs = [...cropDetailLogs].sort((a, b) => {
     let comparison = 0;
     let aVal = a[currentLogSort.field];
     let bVal = b[currentLogSort.field];
 
-    if (currentLogSort.field === 'logDate') {
+    if (currentLogSort.field === "logDate") {
       aVal = new Date(a.logDate);
       bVal = new Date(b.logDate);
     }
 
-    comparison = String(aVal).localeCompare(String(bVal), undefined, { numeric: true });
-    return currentLogSort.direction === 'asc' ? comparison : -comparison;
+    comparison = String(aVal).localeCompare(String(bVal), undefined, {
+      numeric: true,
+    });
+    return currentLogSort.direction === "asc" ? comparison : -comparison;
   });
 
   const tbody = document.getElementById("logTable");
@@ -498,7 +512,9 @@ function updateLogTable() {
       (cropDetailLog) => `
         <tr>
           <td class="px-6 py-2 whitespace-nowrap">
-            <div class="text-sm font-medium text-gray-900">${cropDetailLog.logCode}</div>
+            <div class="text-sm font-medium text-gray-900">${
+              cropDetailLog.logCode
+            }</div>
           </td>
           <td class="px-6 py-2 whitespace-nowrap">
             <div class="text-sm text-gray-900">${cropDetailLog.logDate}</div>
@@ -509,16 +525,26 @@ function updateLogTable() {
           <td class="px-6 py-2 whitespace-nowrap">
             <div class="flex items-center justify-center">
               <img 
-                src="${cropDetailLog.observedImage ? `data:image/png;base64,${cropDetailLog.observedImage}` : '/assets/images/noImage.png'}"
+                src="${
+                  cropDetailLog.observedImage
+                    ? `data:image/png;base64,${cropDetailLog.observedImage}`
+                    : "/assets/images/noImage.png"
+                }"
                 alt="Observed Image"
                 class="h-16 w-24 rounded-lg object-cover shadow-sm"
               />
             </div>
           </td>
           <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500">
-            <button data-log-code="${cropDetailLog.logCode}" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
-            <button data-log-code="${cropDetailLog.logCode}" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-            <button data-log-code="${cropDetailLog.logCode}" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
+            <button data-log-code="${
+              cropDetailLog.logCode
+            }" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
+            <button data-log-code="${
+              cropDetailLog.logCode
+            }" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+            <button data-log-code="${
+              cropDetailLog.logCode
+            }" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
           </td>
         </tr>
       `
@@ -700,17 +726,36 @@ function initializeImageUpload() {
 
 async function deleteLogFromTable(id) {
   try {
-    if (confirm("Are you sure you want to delete this log?")) {
-      await deleteCropDetail(id);
-      cropDetailLogs = cropDetailLogs.filter(
-        (cropLog) => cropLog.logCode !== id
-      );
-      updateLogTable();
-      updateStats();
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#22C55E",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteCropDetail(id);
+        cropDetailLogs = cropDetailLogs.filter(
+          (cropLog) => cropLog.logCode !== id
+        );
+        updateLogTable();
+        updateStats();
+
+        Toast.fire({
+          icon: "success",
+          title: "Log deleted successfully",
+        });
+      }
+    });
   } catch (error) {
-    console.error(error);
-    alert("Failed to delete crop");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to delete log",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 }
 
@@ -874,7 +919,7 @@ function updateStats() {
   }).length;
 
   const activeFields = new Set(
-    staff.flatMap(staffMember => staffMember.fields)
+    staff.flatMap((staffMember) => staffMember.fields)
   ).size;
 
   document.getElementById("totalLogs").textContent = totalLogs;
@@ -889,9 +934,17 @@ async function addLogToTheTable() {
     cropDetailLogs.push(newLog);
     updateLogTable();
     updateStats();
+    Toast.fire({
+      icon: "success",
+      title: "Log added successfully",
+    });
   } catch (error) {
-    console.error(error);
-    alert("Failed to add log");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to add log",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 }
 
@@ -904,9 +957,17 @@ async function updateLogInTheTable(editId) {
     );
     updateLogTable();
     updateStats();
+    Toast.fire({
+      icon: "success",
+      title: "Log added successfully",
+    });
   } catch (error) {
-    console.error(error);
-    alert("Failed to update log");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to update log",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 }
 
@@ -951,7 +1012,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       closeModal();
     });
   } catch (error) {
-    console.error(error);
-    alert("Failed to fetch data");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to Fetch log data",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 });

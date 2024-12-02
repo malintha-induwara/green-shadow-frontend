@@ -1,10 +1,26 @@
-import { getAllCrops, deleteCrop, addCrop ,updateCrop} from "../model/cropModel.js";
+import {
+  getAllCrops,
+  deleteCrop,
+  addCrop,
+  updateCrop,
+} from "../model/cropModel.js";
 import { getAllFields } from "../model/fieldModel.js";
 
+const Toast = Swal.mixin({
+  toast: true,
+  position: "bottom-end",
+  iconColor: "white",
+  customClass: {
+    popup: "colored-toast",
+  },
+  showConfirmButton: false,
+  timer: 1500,
+  timerProgressBar: true,
+});
 
 let currentSort = {
-  field: 'cropCode',
-  direction: 'asc'
+  field: "cropCode",
+  direction: "asc",
 };
 let crops = [];
 let fields = [];
@@ -31,59 +47,57 @@ function resetForm() {
   document.getElementById("uploadState").classList.remove("hidden");
   document.getElementById("previewImg").src = "";
 
-
   const formElements = document.getElementById("cropForm").elements;
-  for(let element of formElements){
+  for (let element of formElements) {
     if (element.closest("#cropCodeContainer")) continue;
     element.disabled = false;
   }
 }
 
-
 function initializeSortHeaders() {
-  const headers = document.querySelectorAll('th[data-sortable]');
-  headers.forEach(header => {
-    header.addEventListener('click', () => handleHeaderClick(header));
+  const headers = document.querySelectorAll("th[data-sortable]");
+  headers.forEach((header) => {
+    header.addEventListener("click", () => handleHeaderClick(header));
   });
 }
 
 function handleHeaderClick(header) {
-  const field = header.getAttribute('data-field');
-  
+  const field = header.getAttribute("data-field");
+
   if (field === currentSort.field) {
-    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+    currentSort.direction = currentSort.direction === "asc" ? "desc" : "asc";
   } else {
     currentSort.field = field;
-    currentSort.direction = 'asc';
+    currentSort.direction = "asc";
   }
 
   updateSortIndicators();
   updateCropsTable();
 }
 
-
 function updateSortIndicators() {
-  const headers = document.querySelectorAll('th[data-sortable]');
-  headers.forEach(header => {
-    const field = header.getAttribute('data-field');
-    
-    const existingIcon = header.querySelector('.sort-icon');
+  const headers = document.querySelectorAll("th[data-sortable]");
+  headers.forEach((header) => {
+    const field = header.getAttribute("data-field");
+
+    const existingIcon = header.querySelector(".sort-icon");
     if (existingIcon) {
       existingIcon.remove();
     }
-    
+
     if (field === currentSort.field) {
-      const icon = document.createElement('span');
-      icon.className = 'sort-icon ml-1 inline-block';
-      
-      icon.innerHTML = currentSort.direction === 'asc' 
-        ? `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      const icon = document.createElement("span");
+      icon.className = "sort-icon ml-1 inline-block";
+
+      icon.innerHTML =
+        currentSort.direction === "asc"
+          ? `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
            </svg>`
-        : `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          : `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
            </svg>`;
-      
+
       header.appendChild(icon);
     }
   });
@@ -96,9 +110,17 @@ async function addCropToTheTable() {
     crops.push(cropData);
     updateCropsTable();
     updateStats();
+    Toast.fire({
+      icon: "success",
+      title: "Crop added successfully",
+    });
   } catch (error) {
-    console.error(error);
-    alert("Failed to add crop");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to add crop",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 }
 
@@ -118,12 +140,14 @@ function updateFieldsDropdown() {
 function updateCropsTable() {
   const sortedCrops = [...crops].sort((a, b) => {
     let comparison = 0;
-    const aVal = a[currentSort.field] === null ? '' : String(a[currentSort.field]);
-    const bVal = b[currentSort.field] === null ? '' : String(b[currentSort.field]);
-    
+    const aVal =
+      a[currentSort.field] === null ? "" : String(a[currentSort.field]);
+    const bVal =
+      b[currentSort.field] === null ? "" : String(b[currentSort.field]);
+
     comparison = aVal.localeCompare(bVal);
-    
-    return currentSort.direction === 'asc' ? comparison : -comparison;
+
+    return currentSort.direction === "asc" ? comparison : -comparison;
   });
 
   const tbody = document.getElementById("cropTable");
@@ -132,15 +156,23 @@ function updateCropsTable() {
       (crop) => `
                 <tr>
                   <td class="px-6 py-2 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900">${crop.cropCode}</div>
+                    <div class="text-sm font-medium text-gray-900">${
+                      crop.cropCode
+                    }</div>
                   </td>
                   <td class="px-6 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">${crop.cropCommonName}</div>
+                    <div class="text-sm text-gray-900">${
+                      crop.cropCommonName
+                    }</div>
                   </td>
                   <td class="px-6 py-2 whitespace-nowrap">
                     <div class="flex items-center">
                       <img 
-                         src="${crop.image? `data:image/png;base64,${crop.image}` : `/assets/images/noImage.png`}" 
+                         src="${
+                           crop.image
+                             ? `data:image/png;base64,${crop.image}`
+                             : `/assets/images/noImage.png`
+                         }" 
                         alt="${crop.cropCommonName}"
                         class="h-16 w-24 rounded-lg object-cover shadow-sm"
                       />
@@ -151,7 +183,8 @@ function updateCropsTable() {
                   </td>
                   <td class="px-4 py-2 whitespace-nowrap">
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                      ${crop.cropSeason === "Spring"
+                      ${
+                        crop.cropSeason === "Spring"
                           ? "bg-green-100 text-green-800"
                           : crop.cropSeason === "Summer"
                           ? "bg-yellow-100 text-yellow-800"
@@ -163,12 +196,20 @@ function updateCropsTable() {
                     </span>
                   </td>
                   <td class="px-4 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">${crop.field === null ? "No" : crop.field}</div>
+                    <div class="text-sm text-gray-900">${
+                      crop.field === null ? "No" : crop.field
+                    }</div>
                   </td>
                   <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-                    <button data-crop-code="${crop.cropCode}" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
-                    <button data-crop-code="${crop.cropCode}" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                    <button data-crop-code="${crop.cropCode}" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
+                    <button data-crop-code="${
+                      crop.cropCode
+                    }" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
+                    <button data-crop-code="${
+                      crop.cropCode
+                    }" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                    <button data-crop-code="${
+                      crop.cropCode
+                    }" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
                   </td>
                 </tr>
               `
@@ -179,7 +220,6 @@ function updateCropsTable() {
 }
 
 function attachEventListeners() {
-
   document.querySelectorAll(".view-btn").forEach((button) => {
     button.addEventListener("click", (e) => {
       const cropCode = e.target.dataset.cropCode;
@@ -204,7 +244,8 @@ function attachEventListeners() {
 
 function getFormData() {
   const cropCommonName = document.getElementById("cropCommonName").value;
-  const cropScientificName = document.getElementById("cropScientificName").value;
+  const cropScientificName =
+    document.getElementById("cropScientificName").value;
   const cropCategory = document.getElementById("cropCategory").value;
   const cropSeason = document.getElementById("cropSeason").value;
   const cropField = document.getElementById("field").value;
@@ -216,7 +257,6 @@ function getFormData() {
   formData.append("category", cropCategory);
   formData.append("cropSeason", cropSeason);
   formData.append("field", cropField);
-
 
   if (fileInput.files && fileInput.files[0]) {
     formData.append("image", fileInput.files[0], fileInput.files[0].name);
@@ -254,7 +294,7 @@ function initializeImageUpload() {
   dropZone.addEventListener("drop", handleDrop, false);
   fileInput.addEventListener("change", handleFiles, false);
   removeImageBtn.addEventListener("click", (e) => {
-    e.preventDefault(); // Prevent form submission
+    e.preventDefault();
     removeImage();
   });
 
@@ -338,24 +378,41 @@ function initializeImageUpload() {
 
 async function deleteCropFromTable(id) {
   try {
-    if (confirm("Are you sure you want to delete this crop?")) {
-      await deleteCrop(id);
-      crops = crops.filter((crop) => crop.cropCode !== id);
-      updateCropsTable();
-      updateStats();
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#22C55E",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteCrop(id);
+        crops = crops.filter((crop) => crop.cropCode !== id);
+        updateCropsTable();
+        updateStats();
+        Toast.fire({
+          icon: "success",
+          title: "Log deleted successfully",
+        });
+      }
+    });
   } catch (error) {
-    console.error(error);
-    alert("Failed to delete crop");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to delete crop",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 }
 
 async function editCrop(cropCode) {
   const crop = crops.find((crop) => crop.cropCode === cropCode);
   if (!crop) return;
-  
 
-  if(crop.image){
+  if (crop.image) {
     document.getElementById("imagePreview").classList.remove("hidden");
     document.getElementById("uploadState").classList.add("hidden");
   }
@@ -368,20 +425,22 @@ async function editCrop(cropCode) {
   document.getElementById("cropCategory").value = crop.category;
   document.getElementById("cropSeason").value = crop.cropSeason;
   document.getElementById("field").value = crop.field;
-  document.getElementById("previewImg").src = `data:image/png;base64,${crop.image}`;
+  document.getElementById(
+    "previewImg"
+  ).src = `data:image/png;base64,${crop.image}`;
   document.getElementById("cropForm").setAttribute("data-mode", "edit");
-  document.getElementById("cropForm").setAttribute("data-edit-id", crop.cropCode);
+  document
+    .getElementById("cropForm")
+    .setAttribute("data-edit-id", crop.cropCode);
 
   openModal();
 }
 
 function viewCrop(cropCode) {
-
   const crop = crops.find((crop) => crop.cropCode === cropCode);
-  if(!crop) return;
+  if (!crop) return;
 
-
-  if(crop.image){
+  if (crop.image) {
     document.getElementById("imagePreview").classList.remove("hidden");
     document.getElementById("uploadState").classList.add("hidden");
   }
@@ -394,12 +453,13 @@ function viewCrop(cropCode) {
   document.getElementById("cropCategory").value = crop.category;
   document.getElementById("cropSeason").value = crop.cropSeason;
   document.getElementById("field").value = crop.field;
-  document.getElementById("previewImg").src = `data:image/png;base64,${crop.image}`;
+  document.getElementById(
+    "previewImg"
+  ).src = `data:image/png;base64,${crop.image}`;
   document.getElementById("saveCropBtn").classList.add("hidden");
 
-
   const formElements = document.getElementById("cropForm").elements;
-  for(let element of formElements){
+  for (let element of formElements) {
     if (element.closest("#cancelCropBtn")) continue;
     element.disabled = true;
   }
@@ -407,19 +467,23 @@ function viewCrop(cropCode) {
   openModal();
 }
 
-
 function updateStats() {
   const totalCrops = crops.length;
   const month = new Date().getMonth();
-  const currentSeason = (month >= 2 && month <= 4)? "Spring" : (month >= 5 && month <= 7)? "Summer" : (month >= 8 && month <= 10)? "Fall" : "Winter";
+  const currentSeason =
+    month >= 2 && month <= 4
+      ? "Spring"
+      : month >= 5 && month <= 7
+      ? "Summer"
+      : month >= 8 && month <= 10
+      ? "Fall"
+      : "Winter";
   const activeFields = crops.filter((crop) => crop.field !== null).length;
 
   document.getElementById("totalCrops").textContent = totalCrops;
   document.getElementById("currentSeason").textContent = currentSeason;
   document.getElementById("activeFields").textContent = activeFields;
 }
-
-
 
 async function updateCropInTheTable(editId) {
   const formData = getFormData();
@@ -430,9 +494,17 @@ async function updateCropInTheTable(editId) {
     );
     updateCropsTable();
     updateStats();
+    Toast.fire({
+      icon: "success",
+      title: "Log updated successfully",
+    });
   } catch (error) {
-    console.error(error);
-    alert("Failed to update crop");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to update crop",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 }
 
@@ -444,7 +516,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     updateFieldsDropdown();
     updateCropsTable();
     updateStats();
-
 
     initializeSortHeaders();
 
@@ -475,6 +546,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         closeModal();
       });
   } catch (error) {
-    console.error(error);
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to Fetch crop data",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 });

@@ -5,9 +5,23 @@ import {
   deleteStaff,
 } from "../model/staffModel.js";
 
+
+//Toast Configs
+const Toast = Swal.mixin({
+  toast: true,
+  position: "bottom-end",
+  iconColor: "white",
+  customClass: {
+    popup: "colored-toast",
+  },
+  showConfirmButton: false,
+  timer: 1500,
+  timerProgressBar: true,
+});
+
 let currentSort = {
-  field: 'staffId',
-  direction: 'asc',
+  field: "staffId",
+  direction: "asc",
 };
 
 let staffs = [];
@@ -40,44 +54,42 @@ function resetForm() {
   }
 }
 
-
 function initializeSortHeaders() {
-  const headers = document.querySelectorAll('th[data-sortable]');
+  const headers = document.querySelectorAll("th[data-sortable]");
   headers.forEach((header) => {
-    header.addEventListener('click', () => handleHeaderClick(header));
+    header.addEventListener("click", () => handleHeaderClick(header));
   });
 }
 
 function handleHeaderClick(header) {
-  const field = header.getAttribute('data-field');
+  const field = header.getAttribute("data-field");
 
   if (field === currentSort.field) {
-    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+    currentSort.direction = currentSort.direction === "asc" ? "desc" : "asc";
   } else {
     currentSort.field = field;
-    currentSort.direction = 'asc';
+    currentSort.direction = "asc";
   }
 
   updateSortIndicators();
   updateStaffTable();
 }
 
-
 function updateSortIndicators() {
-  const headers = document.querySelectorAll('th[data-sortable]');
+  const headers = document.querySelectorAll("th[data-sortable]");
   headers.forEach((header) => {
-    const field = header.getAttribute('data-field');
+    const field = header.getAttribute("data-field");
 
-    const existingIcon = header.querySelector('.sort-icon');
+    const existingIcon = header.querySelector(".sort-icon");
     if (existingIcon) {
       existingIcon.remove();
     }
 
     if (field === currentSort.field) {
-      const icon = document.createElement('span');
-      icon.className = 'sort-icon ml-1 inline-block';
+      const icon = document.createElement("span");
+      icon.className = "sort-icon ml-1 inline-block";
       icon.innerHTML =
-        currentSort.direction === 'asc'
+        currentSort.direction === "asc"
           ? `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
              </svg>`
@@ -89,66 +101,71 @@ function updateSortIndicators() {
   });
 }
 
-
-
 function setupFieldValidation() {
-
   const firstNameInput = document.getElementById("firstName");
   firstNameInput.addEventListener("input", function () {
     this.setCustomValidity("");
     const nameRegex = /^[A-Za-z]+(?:\s[A-Za-z]+)*$/;
     if (!nameRegex.test(this.value)) {
-      this.setCustomValidity("First name can only contain letters and single spaces between words");
+      this.setCustomValidity(
+        "First name can only contain letters and single spaces between words"
+      );
     }
   });
-
 
   const lastNameInput = document.getElementById("lastName");
   lastNameInput.addEventListener("input", function () {
     this.setCustomValidity("");
     const nameRegex = /^[A-Za-z]+(?:\s[A-Za-z]+)*$/;
     if (!nameRegex.test(this.value)) {
-      this.setCustomValidity("Last name can only contain letters and single spaces between words");
+      this.setCustomValidity(
+        "Last name can only contain letters and single spaces between words"
+      );
     }
   });
-
 
   const designationInput = document.getElementById("designation");
   designationInput.addEventListener("input", function () {
     this.setCustomValidity("");
     const designationRegex = /^[A-Za-z]+(?:\s[A-Za-z]+)*$/;
     if (!designationRegex.test(this.value)) {
-      this.setCustomValidity("Designation can only contain letters and single spaces between words");
+      this.setCustomValidity(
+        "Designation can only contain letters and single spaces between words"
+      );
     }
   });
-
 
   const contactNoInput = document.getElementById("contactNo");
   contactNoInput.addEventListener("input", function () {
     this.setCustomValidity("");
     const contactRegex = /^(\+)?[\d\s-]+$/;
     if (!contactRegex.test(this.value)) {
-      this.setCustomValidity("Contact number can only contain digits, spaces, hyphens, and an optional + at the start");
+      this.setCustomValidity(
+        "Contact number can only contain digits, spaces, hyphens, and an optional + at the start"
+      );
     }
   });
 
-
   const addressInputs = [
-    "addressLine01", "addressLine02", "addressLine03", 
-    "addressLine04", "addressLine05"
+    "addressLine01",
+    "addressLine02",
+    "addressLine03",
+    "addressLine04",
+    "addressLine05",
   ];
 
-  addressInputs.forEach(inputId => {
+  addressInputs.forEach((inputId) => {
     const addressInput = document.getElementById(inputId);
     addressInput.addEventListener("input", function () {
       this.setCustomValidity("");
       const addressRegex = /^[A-Za-z0-9\s,.-]+$/;
       if (this.value && !addressRegex.test(this.value)) {
-        this.setCustomValidity("Address can only contain letters, numbers, spaces, and basic punctuation");
+        this.setCustomValidity(
+          "Address can only contain letters, numbers, spaces, and basic punctuation"
+        );
       }
     });
   });
-
 
   const emailInput = document.getElementById("email");
   emailInput.addEventListener("input", function () {
@@ -160,7 +177,6 @@ function setupFieldValidation() {
   });
 }
 
-
 async function addStaffToTheTable() {
   try {
     const staffData = getStaffData();
@@ -168,23 +184,51 @@ async function addStaffToTheTable() {
     staffs.push(response);
     updateStaffTable();
     updateStats();
+
+    Toast.fire({
+      icon: 'success',
+      title: 'Staff added successfully'
+    });
   } catch (error) {
-    console.error(error);
-    alert("Failed to add staff");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to add staff",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 }
 
 async function deleteStaffFromTable(id) {
   try {
-    if (confirm("Are you sure you want to delete this staff?")) {
-      await deleteStaff(id);
-      staffs = staffs.filter((staff) => staff.staffId !== id);
-      updateStaffTable();
-      updateStats();
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#22C55E",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteStaff(id);
+        staffs = staffs.filter((staff) => staff.staffId !== id);
+        updateStaffTable();
+        updateStats();
+
+        Toast.fire({
+          icon: 'success',
+          title: 'Staff deleted successfully'
+        });
+      }
+    });
   } catch (error) {
-    // console.error(error);
-    alert(error.message);
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to update staff",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 }
 
@@ -263,9 +307,17 @@ async function updateStaffInTable(staffId) {
     staffs = staffs.map((s) => (s.staffId === staffId ? updatedStaff : s));
     updateStaffTable();
     updateStats();
+    Toast.fire({
+      icon: 'success',
+      title: 'Vehicle updated successfully'
+    });
   } catch (error) {
-    console.error(error);
-    alert("Failed to update staff");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to update staff",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 }
 
@@ -311,14 +363,16 @@ function updateStaffTable() {
   const sortedStaffs = [...staffs].sort((a, b) => {
     let comparison = 0;
 
-    const aVal = a[currentSort.field] === null ? '' : String(a[currentSort.field]);
-    const bVal = b[currentSort.field] === null ? '': String(b[currentSort.field]);
+    const aVal =
+      a[currentSort.field] === null ? "" : String(a[currentSort.field]);
+    const bVal =
+      b[currentSort.field] === null ? "" : String(b[currentSort.field]);
 
     comparison = aVal.localeCompare(bVal);
-    return currentSort.direction === 'asc' ? comparison : -comparison;
+    return currentSort.direction === "asc" ? comparison : -comparison;
   });
 
-  const tbody = document.getElementById('staffTable');
+  const tbody = document.getElementById("staffTable");
   tbody.innerHTML = sortedStaffs
     .map(
       (staff) => `
@@ -327,7 +381,9 @@ function updateStaffTable() {
           <div class="text-sm font-medium text-gray-900">${staff.staffId}</div>
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
-          <div class="text-sm text-gray-900">${staff.firstName} ${staff.lastName}</div>
+          <div class="text-sm text-gray-900">${staff.firstName} ${
+        staff.lastName
+      }</div>
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
           <div class="text-sm text-gray-900">${staff.designation}</div>
@@ -341,27 +397,33 @@ function updateStaffTable() {
         <td class="px-6 py-4 whitespace-nowrap">
           <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
             ${
-              staff.role === 'MANAGER'
-                ? 'bg-green-100 text-green-800'
-                : staff.role === 'ADMINISTRATIVE'
-                ? 'bg-yellow-100 text-yellow-800'
-                : staff.role === 'SCIENTIST'
-                ? 'bg-blue-100 text-blue-800'
-                : 'bg-gray-100 text-gray-800'
+              staff.role === "MANAGER"
+                ? "bg-green-100 text-green-800"
+                : staff.role === "ADMINISTRATIVE"
+                ? "bg-yellow-100 text-yellow-800"
+                : staff.role === "SCIENTIST"
+                ? "bg-blue-100 text-blue-800"
+                : "bg-gray-100 text-gray-800"
             }">
             ${staff.role}
           </span>
         </td>
         <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-          <button data-staff-id="${staff.staffId}" class="view-staff-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
-          <button data-staff-id="${staff.staffId}" class="edit-staff-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-          <button data-staff-id="${staff.staffId}" class="delete-staff-btn text-red-600 hover:text-red-900">Delete</button>
+          <button data-staff-id="${
+            staff.staffId
+          }" class="view-staff-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
+          <button data-staff-id="${
+            staff.staffId
+          }" class="edit-staff-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+          <button data-staff-id="${
+            staff.staffId
+          }" class="delete-staff-btn text-red-600 hover:text-red-900">Delete</button>
         </td>
       </tr>`
     )
-    .join('');
+    .join("");
 
-  attachEventListeners(); 
+  attachEventListeners();
 }
 
 function attachEventListeners() {
@@ -441,7 +503,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       closeModal();
     });
   } catch (error) {
-    console.error(error);
-    alert("Failed to fetch staff");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to Fetch vehicle",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 });

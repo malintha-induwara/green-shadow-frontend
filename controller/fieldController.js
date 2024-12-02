@@ -6,10 +6,22 @@ import {
 } from "../model/fieldModel.js";
 import { getAllStaff } from "../model/staffModel.js";
 
+//Toast Configs
+const Toast = Swal.mixin({
+  toast: true,
+  position: "bottom-end",
+  iconColor: "white",
+  customClass: {
+    popup: "colored-toast",
+  },
+  showConfirmButton: false,
+  timer: 1500,
+  timerProgressBar: true,
+});
 
 let currentSort = {
-  field: 'fieldCode',
-  direction: 'asc'
+  field: "fieldCode",
+  direction: "asc",
 };
 
 let fields = [];
@@ -66,20 +78,20 @@ function resetForm() {
 }
 
 function initializeFieldSortHeaders() {
-  const headers = document.querySelectorAll('th[data-sortable]');
-  headers.forEach(header => {
-    header.addEventListener('click', () => handleFieldHeaderClick(header));
+  const headers = document.querySelectorAll("th[data-sortable]");
+  headers.forEach((header) => {
+    header.addEventListener("click", () => handleFieldHeaderClick(header));
   });
 }
 
 function handleFieldHeaderClick(header) {
-  const field = header.getAttribute('data-field');
+  const field = header.getAttribute("data-field");
 
   if (field === currentSort.field) {
-    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+    currentSort.direction = currentSort.direction === "asc" ? "desc" : "asc";
   } else {
     currentSort.field = field;
-    currentSort.direction = 'asc';
+    currentSort.direction = "asc";
   }
 
   updateFieldSortIndicators();
@@ -87,22 +99,23 @@ function handleFieldHeaderClick(header) {
 }
 
 function updateFieldSortIndicators() {
-  const headers = document.querySelectorAll('th[data-sortable]');
-  headers.forEach(header => {
-    const field = header.getAttribute('data-field');
-    const existingIcon = header.querySelector('.sort-icon');
+  const headers = document.querySelectorAll("th[data-sortable]");
+  headers.forEach((header) => {
+    const field = header.getAttribute("data-field");
+    const existingIcon = header.querySelector(".sort-icon");
 
     if (existingIcon) existingIcon.remove();
 
     if (field === currentSort.field) {
-      const icon = document.createElement('span');
-      icon.className = 'sort-icon ml-1 inline-block';
+      const icon = document.createElement("span");
+      icon.className = "sort-icon ml-1 inline-block";
 
-      icon.innerHTML = currentSort.direction === 'asc'
-        ? `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      icon.innerHTML =
+        currentSort.direction === "asc"
+          ? `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
            </svg>`
-        : `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          : `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
            </svg>`;
 
@@ -263,7 +276,7 @@ function attachRemoveListeners() {
   const selectedFields = document.getElementById("selectedFields");
   selectedFields.querySelectorAll(".remove-staff").forEach((button) => {
     button.addEventListener("click", (e) => {
-      e.stopPropagation(); 
+      e.stopPropagation();
       const staffId = button.dataset.staffId;
       removeOption(staffId);
     });
@@ -277,22 +290,23 @@ function removeOption(staffId) {
 }
 
 function updateFieldsTable() {
-
   const sortedFields = [...fields].sort((a, b) => {
     let comparison = 0;
-    let aVal = '';
-    let bVal = '';
+    let aVal = "";
+    let bVal = "";
 
-    if (currentSort.field === 'fieldLocation') {
+    if (currentSort.field === "fieldLocation") {
       aVal = a.fieldLocation.x + a.fieldLocation.y;
       bVal = b.fieldLocation.x + b.fieldLocation.y;
     } else {
-      aVal = a[currentSort.field] ?? '';
-      bVal = b[currentSort.field] ?? '';
+      aVal = a[currentSort.field] ?? "";
+      bVal = b[currentSort.field] ?? "";
     }
 
-    comparison = String(aVal).localeCompare(String(bVal), undefined, { numeric: true });
-    return currentSort.direction === 'asc' ? comparison : -comparison;
+    comparison = String(aVal).localeCompare(String(bVal), undefined, {
+      numeric: true,
+    });
+    return currentSort.direction === "asc" ? comparison : -comparison;
   });
 
   const tbody = document.getElementById("fieldTable");
@@ -301,7 +315,9 @@ function updateFieldsTable() {
       (field) => `
         <tr>
           <td class="px-6 py-2 whitespace-nowrap">
-            <div class="text-sm font-medium text-gray-900">${field.fieldCode}</div>
+            <div class="text-sm font-medium text-gray-900">${
+              field.fieldCode
+            }</div>
           </td>
           <td class="px-6 py-2 whitespace-nowrap">
             <div class="text-sm text-gray-900">${field.fieldName}</div>
@@ -317,7 +333,11 @@ function updateFieldsTable() {
           <td class="px-2 py-2 whitespace-nowrap">
             <div class="flex items-center justify-center">
               <img 
-                src="${field.fieldImage1 ? `data:image/png;base64,${field.fieldImage1}` : '/assets/images/noImage.png'}"
+                src="${
+                  field.fieldImage1
+                    ? `data:image/png;base64,${field.fieldImage1}`
+                    : "/assets/images/noImage.png"
+                }"
                 alt="Field Image 1"
                 class="h-16 w-24 rounded-lg object-cover shadow-sm"
               />
@@ -326,16 +346,26 @@ function updateFieldsTable() {
           <td class="px-2 py-2 whitespace-nowrap">
             <div class="flex items-center justify-center">
               <img 
-                src="${field.fieldImage2 ? `data:image/png;base64,${field.fieldImage2}` : '/assets/images/noImage.png'}"
+                src="${
+                  field.fieldImage2
+                    ? `data:image/png;base64,${field.fieldImage2}`
+                    : "/assets/images/noImage.png"
+                }"
                 alt="Field Image 2"
                 class="h-16 w-24 rounded-lg object-cover shadow-sm"
               />
             </div>
           </td>
           <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-            <button data-field-code="${field.fieldCode}" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
-            <button data-field-code="${field.fieldCode}" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-            <button data-field-code="${field.fieldCode}" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
+            <button data-field-code="${
+              field.fieldCode
+            }" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
+            <button data-field-code="${
+              field.fieldCode
+            }" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+            <button data-field-code="${
+              field.fieldCode
+            }" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
           </td>
         </tr>
       `
@@ -561,20 +591,38 @@ function initializeImageUpload() {
 
 async function deleteFieldFromTable(id) {
   try {
-    if (confirm("Are you sure you want to delete this Field?")) {
-      await deleteField(id);
-      fields = fields.filter((field) => field.fieldCode !== id);
-      updateFieldsTable();
-      updateStats();
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#22C55E",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteField(id);
+        fields = fields.filter((field) => field.fieldCode !== id);
+        updateFieldsTable();
+        updateStats();
+
+        Toast.fire({
+          icon: "success",
+          title: "Field delete successfully",
+        });
+      }
+    });
   } catch (error) {
-    console.error(error);
-    alert("Failed to delete field");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to delete fields",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 }
 
 function editField(fieldCode) {
-
   document.getElementById("modalTitle").textContent = "Edit Field";
 
   const field = fields.find((field) => field.fieldCode === fieldCode);
@@ -639,7 +687,6 @@ function editField(fieldCode) {
 }
 
 function viewField(fieldCode) {
-
   document.getElementById("modalTitle").textContent = "View Field";
 
   const field = fields.find((field) => field.fieldCode === fieldCode);
@@ -728,9 +775,18 @@ async function addFieldToTheTable() {
     fields.push(newField);
     updateFieldsTable();
     updateStats();
+
+    Toast.fire({
+      icon: "success",
+      title: "Field added successfully",
+    });
   } catch (error) {
-    console.error(error);
-    alert("Failed to add field");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to add fields",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 }
 
@@ -743,9 +799,18 @@ async function updateFieldInTheTable(editId) {
     );
     updateFieldsTable();
     updateStats();
+
+    Toast.fire({
+      icon: "success",
+      title: "Field updated successfully",
+    });
   } catch (error) {
-    console.error(error);
-    alert("Failed to update field");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to update fields",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 }
 
@@ -791,7 +856,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         closeModal();
       });
   } catch (error) {
-    console.error(error);
-    alert("Failed to fetch fields");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to Fetch fields",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 });

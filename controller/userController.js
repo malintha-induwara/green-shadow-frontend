@@ -5,9 +5,22 @@ import {
   deleteUser,
 } from "../model/userModel.js";
 
+//Toast Configs
+const Toast = Swal.mixin({
+  toast: true,
+  position: "bottom-end",
+  iconColor: "white",
+  customClass: {
+    popup: "colored-toast",
+  },
+  showConfirmButton: false,
+  timer: 1500,
+  timerProgressBar: true,
+});
+
 let currentSort = {
-  field: 'email',
-  direction: 'asc'
+  field: "email",
+  direction: "asc",
 };
 let users = [];
 
@@ -38,20 +51,20 @@ function resetForm() {
 }
 
 function initializeUserSortHeaders() {
-  const headers = document.querySelectorAll('th[data-sortable]');
-  headers.forEach(header => {
-    header.addEventListener('click', () => handleUserHeaderClick(header));
+  const headers = document.querySelectorAll("th[data-sortable]");
+  headers.forEach((header) => {
+    header.addEventListener("click", () => handleUserHeaderClick(header));
   });
 }
 
 function handleUserHeaderClick(header) {
-  const field = header.getAttribute('data-field');
-  
+  const field = header.getAttribute("data-field");
+
   if (field === currentSort.field) {
-    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+    currentSort.direction = currentSort.direction === "asc" ? "desc" : "asc";
   } else {
     currentSort.field = field;
-    currentSort.direction = 'asc';
+    currentSort.direction = "asc";
   }
 
   updateUserSortIndicators();
@@ -59,22 +72,23 @@ function handleUserHeaderClick(header) {
 }
 
 function updateUserSortIndicators() {
-  const headers = document.querySelectorAll('th[data-sortable]');
-  headers.forEach(header => {
-    const field = header.getAttribute('data-field');
-    const existingIcon = header.querySelector('.sort-icon');
+  const headers = document.querySelectorAll("th[data-sortable]");
+  headers.forEach((header) => {
+    const field = header.getAttribute("data-field");
+    const existingIcon = header.querySelector(".sort-icon");
 
     if (existingIcon) existingIcon.remove();
 
     if (field === currentSort.field) {
-      const icon = document.createElement('span');
-      icon.className = 'sort-icon ml-1 inline-block';
+      const icon = document.createElement("span");
+      icon.className = "sort-icon ml-1 inline-block";
 
-      icon.innerHTML = currentSort.direction === 'asc'
-        ? `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      icon.innerHTML =
+        currentSort.direction === "asc"
+          ? `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
            </svg>`
-        : `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          : `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
            </svg>`;
 
@@ -101,23 +115,51 @@ async function addUserToTable() {
     users.push(response);
     updateUsersTable();
     updateStats();
+    Toast.fire({
+      icon: "success",
+      title: "User added successfully",
+    });
   } catch (error) {
-    console.error(error);
-    alert("Failed to add user");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to Add User",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 }
 
 async function deleteUserFromTable(email) {
   try {
-    if (confirm("Are you sure you want to delete this user?")) {
-      await deleteUser(email);
-      users = users.filter((user) => user.email !== email);
-      updateUsersTable();
-      updateStats();
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#22C55E",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        deleteUser(email);
+        users = users.filter((user) => user.email !== email);
+        updateUsersTable();
+        updateStats();
+
+        Toast.fire({
+          icon: "success",
+          title: "User deleted successfully",
+        });
+      }
+    });
   } catch (error) {
-    console.error(error);
-    alert("Failed to delete user");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to delete User",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 }
 
@@ -162,9 +204,17 @@ async function updateUserInTable(email) {
     users = users.map((user) => (user.email === email ? updatedUser : user));
     updateUsersTable();
     updateStats();
+    Toast.fire({
+      icon: "success",
+      title: "User updated successfully",
+    });
   } catch (error) {
-    console.error(error);
-    alert("Failed to update user");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to update User",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 }
 
@@ -183,12 +233,14 @@ function getUserData() {
 function updateUsersTable() {
   const sortedUsers = [...users].sort((a, b) => {
     let comparison = 0;
-    const aVal = a[currentSort.field] === null ? '' : String(a[currentSort.field]);
-    const bVal = b[currentSort.field] === null ? '' : String(b[currentSort.field]);
-    
+    const aVal =
+      a[currentSort.field] === null ? "" : String(a[currentSort.field]);
+    const bVal =
+      b[currentSort.field] === null ? "" : String(b[currentSort.field]);
+
     comparison = aVal.localeCompare(bVal);
-    
-    return currentSort.direction === 'asc' ? comparison : -comparison;
+
+    return currentSort.direction === "asc" ? comparison : -comparison;
   });
 
   const tbody = document.getElementById("userTable");
@@ -197,7 +249,9 @@ function updateUsersTable() {
       (user) => `
                 <tr>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900">${user.email}</div>
+                    <div class="text-sm font-medium text-gray-900">${
+                      user.email
+                    }</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
@@ -214,9 +268,15 @@ function updateUsersTable() {
                     </span>
                   </td>
                   <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                   <button data-email="${user.email}" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
-                   <button data-email="${user.email}" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                   <button data-email="${user.email}" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
+                   <button data-email="${
+                     user.email
+                   }" class="view-btn text-yellow-600 hover:text-yellow-900 mr-3">View</button>
+                   <button data-email="${
+                     user.email
+                   }" class="edit-btn text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                   <button data-email="${
+                     user.email
+                   }" class="delete-btn text-red-600 hover:text-red-900">Delete</button>
                   </td>
                 </tr>
               `
@@ -303,7 +363,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       closeModal();
     });
   } catch (error) {
-    console.error(error);
-    alert("Failed to fetch users");
+    Swal.fire({
+      title: "Error!",
+      text: "Failed to Fetch user data",
+      icon: "error",
+      confirmButtonColor: "#d33"
+    });
   }
 });

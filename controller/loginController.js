@@ -1,9 +1,26 @@
-import { signIn, refreshToken, getToken, clearToken } from '../model/authModel.js';
+import {
+  signIn,
+  refreshToken,
+  getToken,
+  clearToken,
+} from "../model/authModel.js";
 
-const DASHBOARD_PATH = 'pages/main.html';
+//Toast Configs
+const Toast = Swal.mixin({
+  toast: true,
+  position: "bottom-end",
+  iconColor: "white",
+  customClass: {
+    popup: "colored-toast",
+  },
+  showConfirmButton: false,
+  timer: 1500,
+  timerProgressBar: true,
+});
 
+const DASHBOARD_PATH = "pages/main.html";
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const existingToken = getToken();
   if (existingToken) {
     try {
@@ -13,14 +30,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       clearToken();
     }
   }
-
-  const errorAlert = document.getElementById('errorAlert');
-  errorAlert.style.display = 'none';
-
-  const loginForm = document.querySelector('form');
-  loginForm.addEventListener('submit', handleLogin);
+  const loginForm = document.querySelector("form");
+  loginForm.addEventListener("submit", handleLogin);
 });
-
 
 async function handleLogin(event) {
   event.preventDefault();
@@ -32,18 +44,9 @@ async function handleLogin(event) {
     await signIn(emailInput.value, passwordInput.value);
     window.location.href = DASHBOARD_PATH;
   } catch (error) {
-    showError('Credentials Are Wrong');
+    Toast.fire({
+      icon: "error",
+      title: "Credentials are incorrect",
+    });
   }
-}
-
-function showError(message) {
-  const errorAlert = document.getElementById('errorAlert');
-  const errorMessage = errorAlert.querySelector('span');
-  
-  errorMessage.textContent = message;
-  errorAlert.style.display = 'flex';
-
-  setTimeout(() => {
-    errorAlert.style.display = 'none';
-  }, 5000);
 }
