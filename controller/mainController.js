@@ -1,4 +1,4 @@
-import { getRole,getToken } from '../model/authModel.js';
+import { getRole,getToken,clearRole,clearToken } from '../model/authModel.js';
 
 
 const rolePermissions = {
@@ -41,11 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
     link.addEventListener("click", event => {
       event.preventDefault();
 
-      if (!hasPermission(link)) {
-        alert('You do not have permission to access this page');
-        return;
-      }
-
       navLinks.forEach(nav => nav.classList.remove("bg-green-50"));
       link.classList.add("bg-green-50");
       
@@ -53,4 +48,14 @@ document.addEventListener("DOMContentLoaded", () => {
       iframe.setAttribute("src", newSrc);
     });
   });
+
+
+  const logoutButton = document.getElementById("logOutButton");
+  logoutButton.addEventListener("click", () => {
+    clearToken();
+    clearRole();
+    window.location.href = '/index.html';
+  });
+
+
 });
