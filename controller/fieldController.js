@@ -28,10 +28,17 @@ let fields = [];
 let staffs = [];
 let selectedOptions = [];
 
+let map = null;
+let marker = null;
 
 function openModal() {
   const modal = document.getElementById("fieldModal");
   modal.classList.remove("hidden");
+
+  //Refresh map
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 100);
 }
 
 function closeModal() {
@@ -66,6 +73,11 @@ function resetForm() {
 
   renderSelectedOptions();
   renderOptions("");
+
+  //Reset map
+  marker.remove();
+  marker = null;
+  map.setView([0, 0], 2);
 
   document
     .getElementById("searchContainer")
@@ -175,10 +187,9 @@ function updateStaffDropdown() {
   const searchContainer = document.getElementById("searchContainer");
   const dropdownContainer = document.getElementById("dropdownContainer");
 
-  // Initial render of options 
+  // Initial render of options
   renderOptions();
   renderSelectedOptions();
-
 
   searchContainer.addEventListener("click", toggleDropdown);
 
@@ -440,6 +451,51 @@ function getFormData() {
   return formData;
 }
 
+function initializeMap() {
+  map = L.map("map").setView([0, 0], 2);
+
+  // Add OpenStreetMap tiles
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap contributors",
+  }).addTo(map);
+
+  // Add click handler to map
+  map.on("click", function (e) {
+    updateMarkerPosition(e.latlng.lat, e.latlng.lng);
+    updateCoordinateInputs(e.latlng.lat, e.latlng.lng);
+  });
+
+  document
+    .getElementById("latitude")
+    .addEventListener("change", handleCoordinateInputChange);
+  document
+    .getElementById("longitude")
+    .addEventListener("change", handleCoordinateInputChange);
+}
+
+function updateMarkerPosition(lat, lng) {
+  if (marker) {
+    marker.setLatLng([lat, lng]);
+  } else {
+    marker = L.marker([lat, lng]).addTo(map);
+  }
+  map.setView([lat, lng], 13);
+}
+
+function updateCoordinateInputs(lat, lng) {
+  document.getElementById("latitude").value = lat.toFixed(6);
+  document.getElementById("longitude").value = lng.toFixed(6);
+}
+
+function handleCoordinateInputChange() {
+  const lat = parseFloat(document.getElementById("latitude").value);
+  const lng = parseFloat(document.getElementById("longitude").value);
+
+  if (!isNaN(lat) && !isNaN(lng)) {
+    updateMarkerPosition(lat, lng);
+  }
+}
+
 function initializeImageUpload() {
   // Initialize both upload areas
   const uploadAreas = [
@@ -681,8 +737,11 @@ function editField(fieldCode) {
     renderOptions("");
   }
 
-
   openModal();
+
+  setTimeout(() => {
+    updateMarkerPosition(field.fieldLocation.x, field.fieldLocation.y);
+  }, 100);
 }
 
 function viewField(fieldCode) {
@@ -709,7 +768,6 @@ function viewField(fieldCode) {
       .classList.add("hidden");
   }
   document.getElementById("fieldCodeContainer").classList.remove("hidden");
-
 
   document.getElementById("fieldCode").value = field.fieldCode;
   document.getElementById("fieldName").value = field.fieldName;
@@ -750,6 +808,10 @@ function viewField(fieldCode) {
   }
 
   openModal();
+
+  setTimeout(() => {
+    updateMarkerPosition(field.fieldLocation.x, field.fieldLocation.y);
+  }, 100);
 }
 
 function updateStats() {
@@ -829,6 +891,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       .addEventListener("click", closeModal);
 
     initializeImageUpload();
+    initializeMap();
 
     document.getElementById("fieldModal").addEventListener("click", (e) => {
       if (e.target.id === "fieldModal") {
