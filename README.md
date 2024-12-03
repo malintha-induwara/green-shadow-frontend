@@ -54,7 +54,7 @@ The Green Shadow Farm Management System frontend is designed to provide a seamle
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/green-shadow-frontend.git
+   git clone https://github.com/malintha-induwara/green-shadow-frontend.git
    ```
 
 2. Open the project in your preferred text editor
