@@ -781,7 +781,7 @@ async function deleteLogFromTable(id) {
   } catch (error) {
     Swal.fire({
       title: "Error!",
-      text: "Failed to delete log",
+      text: error.message || "Failed to delete log",
       icon: "error",
       confirmButtonColor: "#d33",
     });

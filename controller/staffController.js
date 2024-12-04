@@ -231,7 +231,7 @@ async function deleteStaffFromTable(id) {
   } catch (error) {
     Swal.fire({
       title: "Error!",
-      text: "Failed to update staff",
+      text: error.message ||  "Failed to delete staff",
       icon: "error",
       confirmButtonColor: "#d33",
     });

@@ -405,7 +405,7 @@ async function deleteCropFromTable(id) {
   } catch (error) {
     Swal.fire({
       title: "Error!",
-      text: "Failed to delete crop",
+      text: error.message ||  "Failed to delete crop",
       icon: "error",
       confirmButtonColor: "#d33",
     });
