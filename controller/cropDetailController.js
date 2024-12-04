@@ -755,7 +755,7 @@ function initializeImageUpload() {
 
 async function deleteLogFromTable(id) {
   try {
-    Swal.fire({
+    const result = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
       icon: "warning",
@@ -763,21 +763,21 @@ async function deleteLogFromTable(id) {
       confirmButtonColor: "#22C55E",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        deleteCropDetail(id);
-        cropDetailLogs = cropDetailLogs.filter(
-          (cropLog) => cropLog.logCode !== id
-        );
-        updateLogTable();
-        updateStats();
-
-        Toast.fire({
-          icon: "success",
-          title: "Log deleted successfully",
-        });
-      }
     });
+
+    if (result.isConfirmed) {
+      await deleteCropDetail(id);
+      cropDetailLogs = cropDetailLogs.filter(
+        (cropLog) => cropLog.logCode !== id
+      );
+      updateLogTable();
+      updateStats();
+
+      Toast.fire({
+        icon: "success",
+        title: "Log deleted successfully",
+      });
+    }
   } catch (error) {
     Swal.fire({
       title: "Error!",
@@ -787,6 +787,7 @@ async function deleteLogFromTable(id) {
     });
   }
 }
+
 
 function editLog(logCode) {
   const log = cropDetailLogs.find((log) => log.logCode === logCode);

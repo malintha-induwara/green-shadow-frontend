@@ -207,7 +207,7 @@ async function addStaffToTheTable() {
 
 async function deleteStaffFromTable(id) {
   try {
-    Swal.fire({
+    const result = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
       icon: "warning",
@@ -215,19 +215,19 @@ async function deleteStaffFromTable(id) {
       confirmButtonColor: "#22C55E",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        deleteStaff(id);
-        staffs = staffs.filter((staff) => staff.staffId !== id);
-        updateStaffTable();
-        updateStats();
-
-        Toast.fire({
-          icon: 'success',
-          title: 'Staff deleted successfully'
-        });
-      }
     });
+
+    if (result.isConfirmed) {
+      await deleteStaff(id);
+      staffs = staffs.filter((staff) => staff.staffId !== id);
+      updateStaffTable();
+      updateStats();
+
+      Toast.fire({
+        icon: 'success',
+        title: 'Staff deleted successfully'
+      });
+    }
   } catch (error) {
     Swal.fire({
       title: "Error!",

@@ -381,7 +381,7 @@ function initializeImageUpload() {
 
 async function deleteCropFromTable(id) {
   try {
-    Swal.fire({
+    const result = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
       icon: "warning",
@@ -389,18 +389,19 @@ async function deleteCropFromTable(id) {
       confirmButtonColor: "#22C55E",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        deleteCrop(id);
-        crops = crops.filter((crop) => crop.cropCode !== id);
-        updateCropsTable();
-        updateStats();
-        Toast.fire({
-          icon: "success",
-          title: "Log deleted successfully",
-        });
-      }
     });
+
+    if (result.isConfirmed) {
+      await deleteCrop(id);
+      crops = crops.filter((crop) => crop.cropCode !== id);
+      updateCropsTable();
+      updateStats();
+      
+      Toast.fire({
+        icon: "success",
+        title: "Crop deleted successfully",
+      });
+    }
   } catch (error) {
     Swal.fire({
       title: "Error!",

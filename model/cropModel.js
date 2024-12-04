@@ -66,6 +66,10 @@ export async function updateCrop(cropId, cropData) {
       },
     });
   
+    if (response.status === 409) {
+      throw new Error("Cannot delete this item because it is referenced by other records");
+    }
+    
     if (!response.status === 204) {
       throw new Error("Failed to delete crop");
     }
