@@ -3,6 +3,8 @@ import {
   refreshToken,
   getToken,
   clearToken,
+  clearRole,
+  getRole,
 } from "../model/authModel.js";
 
 //Toast Configs
@@ -19,15 +21,29 @@ const Toast = Swal.mixin({
 });
 
 const DASHBOARD_PATH = "pages/main.html";
+const LOGIN_PATH = "login.html";
 
 document.addEventListener("DOMContentLoaded", async () => {
   const existingToken = getToken();
   if (existingToken) {
     try {
       await refreshToken();
+      const userRole =  getRole();
+      
+      if (userRole === 'OTHER') {
+        await Toast.fire({
+          icon: "error",
+          title: "Access denied. Insufficient permissions.",
+        });
+        clearToken();
+        clearRole();
+        return;
+      }
+      
       window.location.href = DASHBOARD_PATH;
     } catch (error) {
       clearToken();
+      clearRole();
     }
   }
   const loginForm = document.querySelector("form");
@@ -42,6 +58,18 @@ async function handleLogin(event) {
 
   try {
     await signIn(emailInput.value, passwordInput.value);
+    
+    // Check role after successful login
+    const userRole = await getRole();
+    if (userRole === 'OTHER') {
+      await Toast.fire({
+        icon: "error",
+        title: "Access denied. Insufficient permissions.",
+      });
+      clearToken();
+      return;
+    }
+    
     window.location.href = DASHBOARD_PATH;
   } catch (error) {
     Toast.fire({

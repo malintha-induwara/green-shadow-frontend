@@ -1,6 +1,7 @@
 const AUTH_ENDPOINTS = {
   SIGN_IN: "http://localhost:8080/api/v1/auth/signIn",
   REFRESH: "http://localhost:8080/api/v1/auth/refresh",
+  SIGN_UP: "http://localhost:8080/api/v1/auth/signUp",
 };
 
 const TOKEN_KEY = "auth_token";
@@ -26,6 +27,28 @@ export async function signIn(email, password) {
   localStorage.setItem(TOKEN_KEY, data.token);
   return data.token;
 }
+
+export async function signUp(email, password) {
+  const response = await fetch(AUTH_ENDPOINTS.SIGN_UP, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (response.status === 409) {
+    throw new Error("User already exists");
+  }
+
+  if (!response.ok) {
+    throw new Error("Registration failed");
+  }
+
+  const data = await response.json();
+  return data;
+}
+
 
 export async function refreshToken() {
   const response = await fetch(
