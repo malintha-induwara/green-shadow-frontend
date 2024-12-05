@@ -58,9 +58,7 @@ async function handleLogin(event) {
 
   try {
     await signIn(emailInput.value, passwordInput.value);
-    
-    // Check role after successful login
-    const userRole = await getRole();
+    const userRole =  getRole();
     if (userRole === 'OTHER') {
       await Toast.fire({
         icon: "error",
