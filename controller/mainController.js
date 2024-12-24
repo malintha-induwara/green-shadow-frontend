@@ -2,6 +2,7 @@ import {
   getRole,
   getToken,
   clearRole,
+  clearEmail,
   clearToken,
   refreshToken,
 } from "../model/authModel.js";
@@ -16,9 +17,10 @@ const rolePermissions = {
     "staff",
     "user",
     "vehicle",
+    "settings"
   ],
   SCIENTIST: ["dashboard", "crop", "cropDetail"],
-  ADMINISTRATOR: ["dashboard", "equipment", "staff", "user", "vehicle"],
+  ADMINISTRATIVE: ["dashboard", "equipment", "staff", "user", "vehicle","settings"],
   OTHER: ["dashboard"],
 };
 
@@ -77,6 +79,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   logoutButton.addEventListener("click", () => {
     clearToken();
     clearRole();
+    clearEmail();
     window.location.href = "/index.html";
   });
 });

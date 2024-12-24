@@ -6,6 +6,25 @@ const AUTH_ENDPOINTS = {
 
 const TOKEN_KEY = "auth_token";
 const TOKEN_ROLE = "auth_role";
+const USER_EMAIL = "user_email";
+
+function setCookie(name, value, expiryDays = 7) {
+  const date = new Date();
+  date.setTime(date.getTime() + (expiryDays * 24 * 60 * 60 * 1000));
+  const expires = "expires=" + date.toUTCString();
+  document.cookie = `${name}=${value}; ${expires}; path=/; SameSite=Strict; Secure`;
+}
+
+function getCookie(name) {
+  const cookieValue = document.cookie
+    .split('; ')
+    .find(row => row.startsWith(name + '='));
+  return cookieValue ? cookieValue.split('=')[1] : null;
+}
+
+function removeCookie(name) {
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict; Secure`;
+}
 
 export async function signIn(email, password) {
   const response = await fetch(AUTH_ENDPOINTS.SIGN_IN, {
@@ -21,10 +40,11 @@ export async function signIn(email, password) {
   }
 
   const data = await response.json();
-  const role = extractJWTRole(data.token);
+  const tokenData = extractJWTData(data.token);
 
-  localStorage.setItem(TOKEN_ROLE, role);
-  localStorage.setItem(TOKEN_KEY, data.token);
+  setCookie(TOKEN_KEY, data.token);
+  localStorage.setItem(TOKEN_ROLE, tokenData.role);
+  localStorage.setItem(USER_EMAIL, tokenData.email);
   return data.token;
 }
 
@@ -49,7 +69,6 @@ export async function signUp(email, password) {
   return data;
 }
 
-
 export async function refreshToken() {
   const response = await fetch(
     `${AUTH_ENDPOINTS.REFRESH}?refreshToken=${getToken()}`,
@@ -63,14 +82,15 @@ export async function refreshToken() {
   }
 
   const data = await response.json();
-  const role = extractJWTRole(data.token);
+  const tokenData = extractJWTData(data.token);
 
-  localStorage.setItem(TOKEN_ROLE, role);
-  localStorage.setItem(TOKEN_KEY, data.token);
+  setCookie(TOKEN_KEY, data.token);
+  localStorage.setItem(TOKEN_ROLE, tokenData.role);
+  localStorage.setItem(USER_EMAIL, tokenData.email);
   return data.token;
 }
 
-function extractJWTRole(token) {
+function extractJWTData(token) {
   try {
     const payload = token.split('.')[1];
     
@@ -83,11 +103,23 @@ function extractJWTRole(token) {
       )
     );
     
-    return decodedPayload.role;
+    return {
+      role: decodedPayload.role,
+      email: decodedPayload.sub
+    };
   } catch (error) {
-    return null;
+    return { role: null, email: null };
   }
 }
+
+export function getEmail() {  
+  return localStorage.getItem(USER_EMAIL);
+}
+
+export function clearEmail() {
+  localStorage.removeItem(USER_EMAIL);
+}
+
 
 export function getRole() {
   return localStorage.getItem(TOKEN_ROLE);
@@ -98,9 +130,10 @@ export function clearRole() {
 }
 
 export function getToken() {
-  return localStorage.getItem(TOKEN_KEY);
+  return getCookie(TOKEN_KEY);
 }
 
 export function clearToken() {
-  localStorage.removeItem(TOKEN_KEY);
+  removeCookie(TOKEN_KEY);
 }
+

@@ -60,6 +60,10 @@ export async function deleteField(fieldId) {
     },
   });
 
+  if (response.status === 409) {
+    throw new Error("Cannot delete this item because it is referenced by other records");
+  }
+
   if (!response.ok) {
     throw new Error("Failed to delete field");
   }

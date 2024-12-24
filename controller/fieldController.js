@@ -430,8 +430,7 @@ function getFormData() {
 
   const formData = new FormData();
   formData.append("fieldName", fieldName);
-  formData.append("latitude", latitude);
-  formData.append("longitude", longitude);
+  formData.append("fieldLocation", longitude +","+ latitude);
   formData.append("extentSize", extentSize);
   formData.append("staffIds", staffIds);
 
@@ -653,7 +652,7 @@ function initializeImageUpload() {
 
 async function deleteFieldFromTable(id) {
   try {
-    Swal.fire({
+    const result = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
       icon: "warning",
@@ -661,23 +660,23 @@ async function deleteFieldFromTable(id) {
       confirmButtonColor: "#22C55E",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        deleteField(id);
-        fields = fields.filter((field) => field.fieldCode !== id);
-        updateFieldsTable();
-        updateStats();
-
-        Toast.fire({
-          icon: "success",
-          title: "Field delete successfully",
-        });
-      }
     });
+
+    if (result.isConfirmed) {
+      await deleteField(id);
+      fields = fields.filter((field) => field.fieldCode !== id);
+      updateFieldsTable();
+      updateStats();
+
+      Toast.fire({
+        icon: "success",
+        title: "Field deleted successfully",
+      });
+    }
   } catch (error) {
     Swal.fire({
       title: "Error!",
-      text: "Failed to delete fields",
+      text: error.message || "Failed to delete field",
       icon: "error",
       confirmButtonColor: "#d33",
     });
